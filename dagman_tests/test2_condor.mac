@@ -1,0 +1,7 @@
+Universe   = vanilla
+Executable = test2.sh
+Arguments  = 
+Log        = test2.log
+Output     = test2.out
+Error      = test2.error
+Queue

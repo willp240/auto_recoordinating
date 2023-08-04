@@ -1,0 +1,33 @@
+
+/rat/inroot/load test1output.root
+
+# Extra files can also be loaded by including extra lines, such as:
+#/rat/inroot/load input2.root
+
+# To load files from the command line using the '-i' option
+# /rat/inroot/load_default
+# can be used instead
+
+/rat/db/set EFFECTIVE_VELOCITY[labppo_2p2_scintillator] inner_av_velocity 185.0
+
+/run/initialize
+
+# BEGIN EVENT LOOP
+/rat/proc count # An example processor
+/rat/procset update 1
+
+/rat/proc fitter
+/rat/procset method "quad"
+/rat/proc fitter
+/rat/procset method "multipdf-scint"
+/rat/procset seed "quad"
+/rat/procset selector "null"
+/rat/procset name "positionTimeFit"
+
+/rat/proc outroot
+/rat/procset file "test2output.root"
+# END EVENT LOOP
+
+/rat/inroot/read
+
+exit

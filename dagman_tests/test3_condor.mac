@@ -1,0 +1,7 @@
+Universe   = vanilla
+Executable = test3.sh
+Arguments  = 
+Log        = test3.log
+Output     = test3.out
+Error      = test3.error
+Queue
