@@ -4,3 +4,6 @@ Tool for automating position fitter recoordination process at SNO+. Will get put
 Who knows, maybe when it's all working we can add in energy and classifiers?
 
 Lez doo diz
+
+
+Currently just testing running sequential rat jobs in ./dagman_tests
