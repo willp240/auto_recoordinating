@@ -1,0 +1,9 @@
+executable              = ${sh_file}
+universe                = vanilla
+output                  = ${output_file}
+error                   = ${error_file}
+log                     = ${log_file}
+notification            = never
+priority                = 5
+getenv                  = false
+queue                   = 1
