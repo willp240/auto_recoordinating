@@ -1,0 +1,3 @@
+SPLICE e2p5MeV_sim  ${dag_dir}/e2p5MeV_sim.spl
+SPLICE e10p0MeV_sim ${dag_dir}/e10p0MeV_sim.spl
+PARENT e2p5MeV_sim CHILD e10p0MeV_sim
