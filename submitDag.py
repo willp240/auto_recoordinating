@@ -27,20 +27,24 @@ if __name__ == "__main__":
     out_dir = utilities.check_dir(args.out_dir)
     dag_dir = utilities.check_dir("{0}/dag/".format(out_dir))
 
+    material = args.material
+    run_directory = args.run_directory
+    env_file = args.env_file
+
+    ## copy main dag file to output dir
     main_dag = string.Template(open("{0}/dag/main.dag".format(args.submission_directory), "r").read())
     main_dag_text = main_dag.substitute(dag_dir=dag_dir)
     main_dag_name = "{0}/main.dag".format(dag_dir)
     with open(main_dag_name, "w") as main_dag_file:
         main_dag_file.write(main_dag_text)
 
-    #condor_directory = "{0}/condor".format(args.submission_directory)
+    ### initial simulation phase
 
-    ### Initial simulation phase
+    simulation.setup_jobs("e2p5MeV_sim",  out_dir, material, run_directory, env_file, True, 2.5)
+    simulation.setup_jobs("e10p0MeV_sim", out_dir, material, run_directory, env_file, True, 10.0)
 
-    simulation.setup_jobs("e2p5MeV_sim",  out_dir, args.material, args.run_directory, args.env_file, True, 2.5)
-    simulation.setup_jobs("e10p0MeV_sim", out_dir, args.material, args.run_directory, args.env_file, True, 10.0)
+    ## recoordinate quad first
+
 
     sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)
     os.system(sub_command)
-
-    ## repeat for 10 MeV
