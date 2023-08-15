@@ -2,9 +2,12 @@ import string
 import sys
 import os
 import utilities
-## import quad recoord tools also (and utils or w/e)
+sys.path.append(../Quad/)
+import Utilities
 
-def setup_recon_jobs(job_name, out_dir, infiles, material, rat_root, env_file):
+def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file):
+
+    [speeds, numEvents] = Utilities.GetSpeeds( material )
 
     ## Make a condor submit file from template
     template_condor_filename = "template_condor.sub"
@@ -27,11 +30,12 @@ def setup_recon_jobs(job_name, out_dir, infiles, material, rat_root, env_file):
     macro      = string.Template(open("{0}.mac".format(job_name), "r").read())
     dag_splice_text = ""
 
+    input_file = out_dir + "/" + infile + "/" + "_0.root"
+
     ## first run these macros over some simulation (with diff vels)
-    ## get vels from tools eh
-    for i in vels:
+    for i in speeds:
         output_file = "{0}/{1}_{2}.root".format(job_dir, job_name, i)
-        macro_text = macro.substitute(output_file=output_file, material=material)
+        macro_text = macro.substitute(output_file=output_file, material=material, SpeedDB=i, input_file=input_file)
         macro_name = "{0}/{1}_{2}.mac".format(mac_dir, job_name, i)
         with open(macro_name, "w") as macro_file:
             macro_file.write(macro_text)
@@ -59,9 +63,6 @@ def setup_recon_jobs(job_name, out_dir, infiles, material, rat_root, env_file):
     with open(dag_splice_name, "w") as dag_splice:
         dag_splice.write(dag_splice_text)
 
-    ## now run analyse data funcs over these files
-    ## edit analyse data to have option to overwrite table (I guess will need to give it rat root)
-    ## also edit analyse data to have plot made automatically and saved
-
-
+    ## test this now I think
+    ## now run analyse data funcs over these files, in the dag file
     ## make simulation use template macros inside rat-tools, not here

@@ -26,7 +26,7 @@ def setup_jobs(job_name, out_dir, material, rat_root, env_file, fixed_energy, en
     macro      = string.Template(open("{0}.mac".format(job_name), "r").read())
     dag_splice_text = ""
 
-    for i in range(5):
+    for i in Speeds:
         output_file = "{0}/{1}_{2}.root".format(job_dir, job_name, i)
         macro_text = macro.substitute(output_file=output_file, material=material)
         macro_name = "{0}/{1}_{2}.mac".format(mac_dir, job_name, i)

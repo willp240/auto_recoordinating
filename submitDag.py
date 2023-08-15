@@ -44,7 +44,7 @@ if __name__ == "__main__":
     simulation.setup_jobs("e10p0MeV_sim", out_dir, material, run_directory, env_file, True, 10.0)
 
     ## recoordinate quad first
-
+    simulation.setup_jobs("quad_recon", out_dir, material, run_directory, env_file)
 
     sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)
     os.system(sub_command)

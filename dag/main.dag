@@ -1,3 +1,4 @@
 SPLICE e2p5MeV_sim  ${dag_dir}/e2p5MeV_sim.spl
 SPLICE e10p0MeV_sim ${dag_dir}/e10p0MeV_sim.spl
-PARENT e2p5MeV_sim CHILD e10p0MeV_sim
+SPLICE quad_recon   ${dag_dir}/quad_recon.spl
+PARENT e2p5MeV_sim e10p0MeV_sim CHILD quad_recon
