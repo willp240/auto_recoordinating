@@ -1,4 +1,0 @@
-JOB test1 test1_condor.mac
-JOB test2 test2_condor.mac
-JOB test3 test3_condor.mac
-PARENT test1 CHILD test2 test3
