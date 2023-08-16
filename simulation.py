@@ -3,7 +3,7 @@ import sys
 import os
 import utilities
 
-def setup_jobs(job_name, out_dir, material, rat_root, env_file, fixed_energy, energy):
+def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shift, fixed_energy, energy):
 
     ## Make a condor submit file from template
     template_condor_filename = "template_condor.sub"
@@ -23,12 +23,18 @@ def setup_jobs(job_name, out_dir, material, rat_root, env_file, fixed_energy, en
     sh_dir     = utilities.check_dir("{0}/sh/".format(job_dir))
     submit_dir = utilities.check_dir("{0}/submit/".format(job_dir))
     output_dir = utilities.check_dir("{0}/output/".format(job_dir))
-    macro      = string.Template(open("{0}.mac".format(job_name), "r").read())
+    macro      = string.Template(open("fixed_e_sim.mac", "r").read())
     dag_splice_text = ""
 
-    for i in Speeds:
+    for i in range(5):
         output_file = "{0}/{1}_{2}.root".format(job_dir, job_name, i)
-        macro_text = macro.substitute(output_file=output_file, material=material)
+        macro_text = macro.substitute(ExtraDB="",
+                                      ThinFactor=1.0,
+                                      ScintMaterial=material,
+                                      GeoFile=geo_file,
+                                      AVShift=av_shift,
+                                      FileName=output_file,
+                                      Energy=energy)
         macro_name = "{0}/{1}_{2}.mac".format(mac_dir, job_name, i)
         with open(macro_name, "w") as macro_file:
             macro_file.write(macro_text)

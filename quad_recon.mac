@@ -1,0 +1,16 @@
+
+/rat/inroot/load ${input_file}
+
+/run/initialize
+
+/rat/proc count # An example processor
+/rat/procset update 5
+
+/rat/proc fitter
+/rat/procset method "quad"
+
+/rat/proc outroot
+/rat/procset file "${output_file}"
+
+/rat/inroot/read
+exit
