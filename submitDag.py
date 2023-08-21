@@ -5,6 +5,7 @@ import argparse
 import simulation
 import utilities
 import quad
+import scint_eff_vel
 
 if __name__ == "__main__":
 
@@ -58,6 +59,9 @@ if __name__ == "__main__":
 
     ## recoordinate quad first
     quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
+
+    ## recoordinate scint effective velocities
+    scint_eff_vel.setup_recon_jobs("sev_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
 
     sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)
     print(sub_command)
