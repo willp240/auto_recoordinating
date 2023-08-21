@@ -3,6 +3,8 @@ SPLICE e10p0MeV_sim ${dag_dir}/e10p0MeV_sim.spl
 SPLICE quad_recon   ${dag_dir}/quad_recon.spl
 SPLICE quad_analyse ${dag_dir}/quad_analyse.spl
 SPLICE sev_recon    ${dag_dir}/sev_recon.spl
+SPLICE sev_analyse  ${dag_dir}/sev_analyse.spl
 PARENT e2p5MeV_sim e10p0MeV_sim CHILD quad_recon
-PARENT quad_recon CHILD quad_analyse
-PARENT quad_analyse CHILD sev_recon
+PARENT quad_recon               CHILD quad_analyse
+PARENT quad_analyse             CHILD sev_recon
+PARENT sev_recon                CHILD sev_analyse
