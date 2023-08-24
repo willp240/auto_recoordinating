@@ -76,7 +76,8 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, su
         ## And make the sh file to run
         sh_text = template_sh_raw_text.substitute(env_file=env_file,
                                                   rat_root=rat_root,
-                                                  macro_name="{0}{1}_{2}.mac".format(mac_dir, job_name, i))
+                                                  macro_name="{0}{1}_{2}.mac".format(mac_dir, job_name, i),
+                                                  sleep = "$((1 + $RANDOM % 10))")
         sh_name = "{0}{1}_{2}.sh".format(sh_dir, job_name, i)
         with open(sh_name, "w") as sh_file:
             sh_file.write(sh_text)
@@ -111,7 +112,8 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, su
                                                               submission_dir = submission_dir,
                                                               material = material,
                                                               input_files = "{0}/{1}/".format(out_dir, job_name),
-                                                              plot_dir = "{0}/plots".format(out_dir))
+                                                              plot_dir = "{0}/plots".format(out_dir),
+                                                              sleep = "$((1 + $RANDOM % 10))")
 
 
     analyse_sh_name = "{0}/sev_analyse.sh".format(sh_dir)

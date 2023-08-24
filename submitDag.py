@@ -6,6 +6,7 @@ import simulation
 import utilities
 import quad
 import scint_eff_vel
+import multipdf
 
 if __name__ == "__main__":
 
@@ -55,13 +56,16 @@ if __name__ == "__main__":
     ### initial simulation phase
 
     simulation.setup_jobs("e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5)
-    simulation.setup_jobs("e10p0MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0)
+    #simulation.setup_jobs("e10p0MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0)
 
     ## recoordinate quad first
     quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
 
     ## recoordinate scint effective velocities
     scint_eff_vel.setup_recon_jobs("sev_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
+
+    ## recoordinate multipdff
+    multipdf.setup_recon_jobs("multipdf_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir)
 
     sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)
     print(sub_command)

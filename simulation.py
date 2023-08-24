@@ -45,7 +45,8 @@ def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shi
         ## And make the sh file to run
         sh_text = template_sh_raw_text.substitute(env_file=env_file,
                                                   rat_root=rat_root,
-                                                  macro_name="{0}{1}_{2}.mac".format(mac_dir, job_name, i))
+                                                  macro_name="{0}{1}_{2}.mac".format(mac_dir, job_name, i),
+                                                  sleep = "$((1 + $RANDOM % 10))")
         sh_name = "{0}{1}_{2}.sh".format(sh_dir, job_name, i)
         with open(sh_name, "w") as sh_file:
             sh_file.write(sh_text)
