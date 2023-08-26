@@ -1,0 +1,5 @@
+SPLICE sev_recon                ${dag_dir}/sev_recon.spl
+SPLICE sev_analyse              ${dag_dir}/sev_analyse.spl
+SPLICE multipdf_recon           ${dag_dir}/multipdf_recon.spl
+PARENT sev_recon                CHILD sev_analyse
+PARENT sev_analyse              CHILD multipdf_recon

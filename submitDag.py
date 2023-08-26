@@ -53,6 +53,13 @@ if __name__ == "__main__":
     with open(main_dag_name, "w") as main_dag_file:
         main_dag_file.write(main_dag_text)
 
+    ## and do same for sub dag file
+    sub_dag = string.Template(open("{0}/dag/loop_sub.dag".format(submission_dir), "r").read())
+    sub_dag_text = sub_dag.substitute(dag_dir=dag_dir)
+    sub_dag_name = "{0}/loop_sub.dag".format(dag_dir)
+    with open(sub_dag_name, "w") as sub_dag_file:
+        sub_dag_file.write(sub_dag_text)
+
     ### initial simulation phase
 
     simulation.setup_jobs("e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5)
