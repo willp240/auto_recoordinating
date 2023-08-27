@@ -7,6 +7,7 @@ import utilities
 import quad
 import scint_eff_vel
 import multipdf
+import loop
 
 if __name__ == "__main__":
 
@@ -73,6 +74,9 @@ if __name__ == "__main__":
 
     ## recoordinate multipdff
     multipdf.setup_recon_jobs("multipdf_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir)
+
+    ## script for iterating the scinteffvel and multipdf loop
+    loop.setup_loop_job()
 
     sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)
     print(sub_command)
