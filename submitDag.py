@@ -9,6 +9,14 @@ import scint_eff_vel
 import multipdf
 import loop
 
+out_dir = ""
+material = ""
+rat_root = ""
+env_file = ""
+submission_dir = ""
+geo_file = ""
+av_shift = ""
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser("Launch a load of identical rat simulation jobs")
@@ -43,7 +51,6 @@ if __name__ == "__main__":
     env_file = args.env_file
     submission_dir = args.submission_directory
     geo_file = args.geo_file
-    av_shift = ""
     if args.extraAVShift:
         avShift = "/rat/db/set GEO[av] position [0.,0.," + args.extraAVShift + "]"
 
@@ -70,10 +77,10 @@ if __name__ == "__main__":
     quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
 
     ## recoordinate scint effective velocities
-    scint_eff_vel.setup_recon_jobs("sev_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
+    scint_eff_vel.setup_recon_jobs("SEV_Recon_Round0", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
 
     ## recoordinate multipdff
-    multipdf.setup_recon_jobs("multipdf_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir)
+    multipdf.setup_recon_jobs("MultiPDF_Recon_Round0", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir)
 
     ## script for iterating the scinteffvel and multipdf loop
     loop.setup_loop_job()
@@ -81,3 +88,42 @@ if __name__ == "__main__":
     sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)
     print(sub_command)
     os.system(sub_command)
+
+def iterate_loop():
+
+    ## Check if scint eff vel has been recoordinated for this material before
+    db = RAT.DB.Get(
+    db.LoadAll(os.environ["GLG4DATA"], "*EFFECTIVE_VELOCITY*.ratdb")
+    link = db.GetLink("EFFECTIVE_VELOCITY", material)
+    try:
+        current_vel = link.GetD("inner_av_velocity")
+    except:
+        got_value = False
+    else:
+        got_value = True
+
+    if got_value:
+        sev_filename = "{0}/sev_values.root".format(out_dir)
+        sev_file = TFile(sev_filename)
+ 
+        try:
+            sev_vec = sev_file.GetObject("sev_vec")
+        except:
+            sev_vec = ROOT.TVector3()
+        round_num = sev_vec.size()
+        prev_value = sev_vec.back()
+        sev_vec.push_back(current_vel)
+        sev_file.delete("sev_vector")
+        sev_vec.Write("sev_vector")
+        print("Round ", round_num, ": ", current_vel)
+
+        if ( abs(current_vel-prev_vel) / prev_value < 0.0005 ):
+            return 0
+
+    ## re-recoordinate scint effective velocities
+    scint_eff_vel.setup_recon_jobs("SEV_Recon_Round{0}".format(round_num), out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
+
+    ## recoordinate multipdff
+    multipdf.setup_recon_jobs("MultiPDF_Recon_Round{0}".format(round_num), out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir)
+
+    return 1

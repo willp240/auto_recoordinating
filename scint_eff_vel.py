@@ -12,7 +12,7 @@ import sevUtilities
 
 def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, submission_dir, geo_file, av_shift):
 
-    ## Check if quad has been recoordinated for this material before
+    ## Check if scint eff vel has been recoordinated for this material before
     db = RAT.DB.Get()
     db.LoadAll(os.environ["GLG4DATA"], "*EFFECTIVE_VELOCITY*.ratdb")
     link = db.GetLink("EFFECTIVE_VELOCITY", material)
