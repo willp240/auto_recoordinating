@@ -2,16 +2,14 @@ import sys
 import os
 import string
 import argparse
-import simulation
 import utilities
-import quad
-import scint_eff_vel
-import multipdf
 import loop
+import rat
+from ROOT import RAT
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser("Launch jobs for recoordinating position fitters")
+    parser = argparse.ArgumentParser("Launch a load of identical rat simulation jobs")
     parser.add_argument('out_dir', type=str, help='directory to place reprocessed files')
     parser.add_argument('-e', '--env_file', type=str,
                         help='path to environment file',
@@ -45,39 +43,39 @@ if __name__ == "__main__":
     geo_file = args.geo_file
     if args.extraAVShift:
         avShift = "/rat/db/set GEO[av] position [0.,0.," + args.extraAVShift + "]"
+    ## Check if scint eff vel has been recoordinated for this material before
+    db = RAT.DB.Get(
+    db.LoadAll(os.environ["GLG4DATA"], "*EFFECTIVE_VELOCITY*.ratdb")
+    link = db.GetLink("EFFECTIVE_VELOCITY", material)
+    try:
+        current_vel = link.GetD("inner_av_velocity")
+    except:
+        got_value = False
+    else:
+        got_value = True
 
-    ## copy main dag file to output dir
-    main_dag = string.Template(open("{0}/dag/main.dag".format(submission_dir), "r").read())
-    main_dag_text = main_dag.substitute(dag_dir=dag_dir)
-    main_dag_name = "{0}/main.dag".format(dag_dir)
-    with open(main_dag_name, "w") as main_dag_file:
-        main_dag_file.write(main_dag_text)
+    if got_value:
+        sev_filename = "{0}/sev_values.root".format(out_dir)
+        sev_file = TFile(sev_filename)
+ 
+        try:
+            sev_vec = sev_file.GetObject("sev_vec")
+        except:
+            sev_vec = ROOT.TVector3()
+        round_num = sev_vec.size()
+        prev_value = sev_vec.back()
+        sev_vec.push_back(current_vel)
+        sev_file.delete("sev_vector")
+        sev_vec.Write("sev_vector")
+        print("Round ", round_num, ": ", current_vel)
 
-    ## and do same for sub dag file
-    sub_dag = string.Template(open("{0}/dag/loop_sub.dag".format(submission_dir), "r").read())
-    sub_dag_text = sub_dag.substitute(dag_dir=dag_dir)
-    sub_dag_name = "{0}/loop_sub.dag".format(dag_dir)
-    with open(sub_dag_name, "w") as sub_dag_file:
-        sub_dag_file.write(sub_dag_text)
+        if ( abs(current_vel-prev_vel) / prev_value < 0.0005 ):
+            return 0
 
-    ### initial simulation phase
-
-    simulation.setup_jobs("e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5)
-    #simulation.setup_jobs("e10p0MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0)
-
-    ## recoordinate quad first
-    quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
-
-    ## recoordinate scint effective velocities
-    scint_eff_vel.setup_recon_jobs("SEV_Recon_Round0", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
+    ## re-recoordinate scint effective velocities
+    scint_eff_vel.setup_recon_jobs("SEV_Recon_Round{0}".format(round_num), out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
 
     ## recoordinate multipdff
-    multipdf.setup_recon_jobs("MultiPDF_Recon_Round0", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir)
+    multipdf.setup_recon_jobs("MultiPDF_Recon_Round{0}".format(round_num), out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir)
 
-    ## script for iterating the scinteffvel and multipdf loop
-    loop.setup_loop_job()
-
-    sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)
-    print(sub_command)
-    os.system(sub_command)
-
+    return 1

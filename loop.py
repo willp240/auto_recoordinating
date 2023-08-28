@@ -13,11 +13,16 @@ import utilities
 ### If returning 1, we also need to call scint_eff_vel.setup_recon_jobs and multipdf.setup_recon_jobs with new round number in names
 
 
-def setup_loop_script(dag_dir, submission_dir):
+def setup_loop_script(out_dir, material, rat_root, env_file, sub_dir):
 
     ## copy loop script to output dir
     template_loop_filename = string.Template(open("{0}/dag/iterate_loop.sh".format(submission_dir), "r").read())
-    template_loop_text = template_loop_filename.substitute(dag_dir=dag_dir)
+    template_loop_text = template_loop_filename.substitute(env_file=env_file,
+                                                           sub_dir=sub_dir,
+                                                           rat_root=rat_root,
+                                                           material=material,
+                                                           out_dir=out_dir
+                                                           )
     main_loop_filename = "{0}/iterate_loop.sh".format(dag_dir)
     with open(main_loop_filename, "w") as main_loop_file:
         main_loop_file.write(template_loop_text)
