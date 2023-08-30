@@ -1,10 +1,10 @@
-SPLICE e2p5MeV_sim            ${dag_dir}/e2p5MeV_sim.spl
-#SPLICE e10p0MeV_sim           ${dag_dir}/e10p0MeV_sim.spl
-SPLICE quad_recon             ${dag_dir}/quad_recon.spl
-SPLICE quad_analyse           ${dag_dir}/quad_analyse.spl
-SUBDAG EXTERNAL sev_mpdf_loop ${dag_dir}/loop_sub.dag
-SCRIPT POST sev_mpdf_loop     ${dag_dir}/iterate_loop.sh
-RETRY  sev_mpdf_loop          10
-PARENT e2p5MeV_sim            CHILD quad_recon
-PARENT quad_recon             CHILD quad_analyse
-PARENT quad_analyse           CHILD sev_mpdf_loop
+SUBDAG EXTERNAL  e2p5MeV_Sim   ${dag_dir}/e2p5MeV_Sim.spl
+#SPLICE e10p0MeV_Sim           ${dag_dir}/e10p0MeV_Sim.spl
+#SPLICE quad_recon             ${dag_dir}/quad_recon.spl
+#SPLICE quad_analyse           ${dag_dir}/quad_analyse.spl
+#SUBDAG EXTERNAL sev_mpdf_loop ${dag_dir}/loop_sub.dag
+SCRIPT PRE e2p5MeV_Sim       ${dag_dir}/iterate_loop.sh
+RETRY  e2p5MeV_Sim            3
+#PARENT e2p5MeV_Sim            CHILD quad_recon
+#PARENT quad_recon             CHILD quad_analyse
+#PARENT quad_analyse           CHILD sev_mpdf_loop

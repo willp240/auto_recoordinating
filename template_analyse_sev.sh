@@ -6,3 +6,5 @@ source ${rat_root}/env.sh
 cd /home/parkerw/Software/rat-tools_fork/FitCoordination/ScintEffectiveSpeed/
 sleep ${sleep}
 python AnalyseData.py -s ${material} -i ${input_files} -p ${plot_dir} --overwriteTable
+cd ${sub_dir}
+python -c 'import db_utilities; write_current_sev( ${material}, ${out_dir})'

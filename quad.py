@@ -2,26 +2,8 @@ import string
 import sys
 import os
 import utilities
-import rat
-from ROOT import RAT
-sys.path.append("/home/parkerw/Software/rat-tools_fork/FitCoordination/QuadSpeed/") #TODO fix this eventually
-import Utilities
 
-def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, submission_dir, geo_file, av_shift):
-
-    ## Check if quad has been recoordinated for this material before
-    db = RAT.DB.Get()
-    db.LoadAll(os.environ["GLG4DATA"], "*QUAD*.ratdb")
-    link = db.GetLink("QUAD_FIT", material)
-    try:
-        link.GetD("light_speed")
-    except:
-        defaultMaterial = True
-    else:
-        defaultMaterial = False
-
-    ## Get speeds to run over
-    [speeds, numEvents] = Utilities.GetSpeeds( material )
+def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial, speeds):
 
     ## Make a condor submit file from template
     template_condor_filename = "template_condor.sub"

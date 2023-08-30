@@ -2,29 +2,8 @@ import string
 import sys
 import os
 import utilities
-import rat
-from ROOT import RAT
-print(sys.path)
-sys.path.remove("/home/parkerw/Software/rat-tools_fork/FitCoordination/QuadSpeed/") #TODO fix this eventually
-sys.path.append("/home/parkerw/Software/rat-tools_fork/FitCoordination/ScintEffectiveSpeed/") #TODO fix this eventually
-print(sys.path)
-import sevUtilities
 
-def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, submission_dir, geo_file, av_shift):
-
-    ## Check if scint eff vel has been recoordinated for this material before
-    db = RAT.DB.Get()
-    db.LoadAll(os.environ["GLG4DATA"], "*EFFECTIVE_VELOCITY*.ratdb")
-    link = db.GetLink("EFFECTIVE_VELOCITY", material)
-    try:
-        link.GetD("inner_av_velocity")
-    except:
-        defaultMaterial = True
-    else:
-        defaultMaterial = False
-
-    ## Get speeds to run over
-    speeds = sevUtilities.Speeds
+def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial, speeds):
 
     ## Make a condor submit file from template
     template_condor_filename = "template_condor.sub"
@@ -77,7 +56,9 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, su
         sh_text = template_sh_raw_text.substitute(env_file=env_file,
                                                   rat_root=rat_root,
                                                   macro_name="{0}{1}_{2}.mac".format(mac_dir, job_name, i),
-                                                  sleep = "$((1 + $RANDOM % 10))")
+                                                  sleep = "$((1 + $RANDOM % 10))",
+                                                  out_dir=out_dir,
+                                                  sub_dir=submission_dir)
         sh_name = "{0}{1}_{2}.sh".format(sh_dir, job_name, i)
         with open(sh_name, "w") as sh_file:
             sh_file.write(sh_text)
@@ -97,7 +78,7 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, su
         dag_splice_text += dag_splice_line+"\n"
 
     ## Write dag splice to file
-    dag_splice_name = "{0}/dag/{1}.spl".format(out_dir, job_name)
+    dag_splice_name = "{0}/dag/sev_recon.spl".format(out_dir)
     with open(dag_splice_name, "w") as dag_splice:
         dag_splice.write(dag_splice_text)
 
@@ -113,16 +94,18 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, su
                                                               material = material,
                                                               input_files = "{0}/{1}/".format(out_dir, job_name),
                                                               plot_dir = "{0}/plots".format(out_dir),
-                                                              sleep = "$((1 + $RANDOM % 10))")
+                                                              sleep = "$((1 + $RANDOM % 10))",
+                                                              out_dir=out_dir,
+                                                              sub_dir=submission_dir)
 
 
-    analyse_sh_name = "{0}/sev_analyse.sh".format(sh_dir)
+    analyse_job_name = "sev_analyse"
+    analyse_sh_name = "{0}/{1}.sh".format(sh_dir, analyse_job_name)
     with open(analyse_sh_name, "w") as analyse_file:
         analyse_file.write(analyse_sh_text)
     os.chmod(analyse_sh_name, 0o777)
 
     ## And the condor submission macro
-    analyse_job_name = "sev_analyse"
     sub_text = template_condor_raw_text.substitute(sh_file=analyse_sh_name,
                                                    error_file="{0}/{1}.error".format(error_dir, analyse_job_name),
                                                    output_file="{0}/{1}.output".format(output_dir, analyse_job_name),
