@@ -3,7 +3,9 @@ import sys
 import os
 import utilities
 
-def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial, speeds):
+def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial):
+
+    speeds = utilities.QuadSpeeds
 
     ## Make a condor submit file from template
     template_condor_filename = "template_condor.sub"
@@ -97,7 +99,7 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, su
         analyse_file.write(analyse_sh_text)
     os.chmod(analyse_sh_name, 0o777)
 
-     ## And the condor submission macro
+    ## And the condor submission macro
     analyse_job_name = "quad_analyse"
     sub_text = template_condor_raw_text.substitute(sh_file=analyse_sh_name,
                                                    error_file="{0}/{1}.error".format(error_dir, analyse_job_name),

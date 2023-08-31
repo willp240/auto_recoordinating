@@ -17,24 +17,23 @@ def check_first_sev( material ):
     else:
         defaultMaterial = False
     
-        return defaultMaterial
+    return defaultMaterial
 
 def write_current_sev( material, out_dir ):
     
     ## Get newly recoordinated scint eff vel
+    db = RAT.DB.Get()
     db.LoadAll(os.environ["GLG4DATA"], "*EFFECTIVE_VELOCITY*.ratdb")
     db = RAT.DB.Get()
     link = db.GetLink("EFFECTIVE_VELOCITY", material)
     curr_val = link.GetD("inner_av_velocity")
 
-    
     sev_filename = "{0}/sev_values.txt".format(out_dir)
     try:
         sev_file = open(sev_filename, 'r')
         sev_text = sev_file.read()
     except:
         sev_text = ""
-    sev_list = sev_text.split()
 
     curr_val_string = str(curr_val) + "\n"
     sev_text += curr_val_string

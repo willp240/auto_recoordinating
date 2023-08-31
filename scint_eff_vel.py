@@ -3,7 +3,9 @@ import sys
 import os
 import utilities
 
-def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial, speeds):
+def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial):
+
+    speeds = utilities.SEVSpeeds
 
     ## Make a condor submit file from template
     template_condor_filename = "template_condor.sub"

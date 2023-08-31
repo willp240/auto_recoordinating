@@ -12,8 +12,7 @@ def setup_loop_script(out_dir, material, rat_root, env_file, sub_dir):
                                                            sub_dir=sub_dir,
                                                            rat_root=rat_root,
                                                            material=material,
-                                                           bash_command="if [ $? != 0 ];",
-                                                           PATH="${PATH}")
+                                                           bash_command="if [ $? != 0 ];")
     main_loop_filename = "{0}/dag/iterate_loop.sh".format(out_dir)
     with open(main_loop_filename, "w") as main_loop_file:
         main_loop_file.write(template_loop_text)
