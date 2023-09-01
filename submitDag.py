@@ -11,10 +11,6 @@ import loop
 import db_utilities
 import rat
 from ROOT import RAT
-sys.path.append("/home/parkerw/Software/rat-tools_fork/FitCoordination/ScintEffectiveSpeed/") #TODO fix this eventually
-import SEVUtilities
-sys.path.append("/home/parkerw/Software/rat-tools_fork/FitCoordination/QuadSpeed/") #TODO fix this eventually
-import Utilities as QuadUtilities
 
 if __name__ == "__main__":
 
@@ -54,11 +50,6 @@ if __name__ == "__main__":
     if args.extraAVShift:
         avShift = "/rat/db/set GEO[av] position [0.,0.," + args.extraAVShift + "]"
 
-    default_material = db_utilities.check_first_sev(material)
-    sev_speeds = SEVUtilities.Speeds
-    ## Get speeds to run over
-    [quad_speeds, quad_num_events] = QuadUtilities.GetSpeeds( material )
-
     ## copy main dag file to output dir
     main_dag = string.Template(open("{0}/dag/main.dag".format(submission_dir), "r").read())
     main_dag_text = main_dag.substitute(dag_dir=dag_dir)
@@ -73,22 +64,27 @@ if __name__ == "__main__":
     with open(sub_dag_name, "w") as sub_dag_file:
         sub_dag_file.write(sub_dag_text)
 
+    ## check if this will be first time sev has been recoordinated for this material
+    default_material = db_utilities.check_first_sev(material)
+
     ### initial simulation phase
 
     simulation.setup_jobs("e2p5MeV_Sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5)
-    #simulation.setup_jobs("e10p0MeV_Sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0)
+    simulation.setup_jobs("e10p0MeV_Sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0)
 
     ## recoordinate quad first
-    quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_Sim", material, rat_root, env_file, submission_dir, geo_file, av_shift, default_material, quad_speeds)
+    quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_Sim", material, rat_root, env_file, submission_dir, geo_file, av_shift, default_material)
 
     ## recoordinate scint effective velocities
-    scint_eff_vel.setup_recon_jobs("sev_recon_Round0", out_dir, "e2p5MeV_Sim", material, rat_root, env_file, submission_dir, geo_file, av_shift, default_material, sev_speeds)
+    scint_eff_vel.setup_recon_jobs("sev_recon_Round0", out_dir, "e2p5MeV_Sim", "single_energy", "", material, rat_root, env_file, submission_dir, geo_file, av_shift, default_material)
 
-    ## recoordinate multipdff
+    ## recoordinate multipdf
     multipdf.setup_recon_jobs("multiPDF_recon_Round0", out_dir, "e2p5MeV_Sim", material, rat_root, env_file, submission_dir)
 
     ## script for iterating the scinteffvel and multipdf loop
-    loop.setup_loop_script(out_dir, material, rat_root, env_file, submission_dir, sev_speeds)
+    loop.setup_loop_script(out_dir, material, rat_root, env_file, submission_dir)
+
+    scint_eff_vel.setup_recon_jobs("sev_recon_HighE", out_dir, "e10p0MeV_Sim", "interpolate", "sev_recon_Round", material, rat_root, env_file, submission_dir, geo_file, av_shift, False)
 
     sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)
     print(sub_command)

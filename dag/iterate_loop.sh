@@ -3,20 +3,22 @@
 source ${env_file}
 source ${rat_root}/env.sh
 
-echo "entering python script" >> /home/parkerw/Software/auto_recoordinating/test.txt
-
-#python test.py 2> /home/parkerw/Software/auto_recoordinating/test.err
-#python 2> /home/parkerw/Software/auto_recoordinating/test.txt
-
-python ${sub_dir}/template_loop.py -e ${env_file} -s ${sub_dir} -r ${rat_root} -m ${material} ${out_dir} 2> /home/parkerw/Software/auto_recoordinating/test.err
-
-echo "done python script" >> /home/parkerw/Software/auto_recoordinating/test.txt
+python ${sub_dir}/template_loop.py -e ${env_file} -s ${sub_dir} -r ${rat_root} -m ${material} ${out_dir}
 
 ${bash_command}
 then
-    echo "exit 1"
     exit 1
 else
-    echo "EXIT 0"
+    ## Check how many runs it took to converge, and update the sh file
+    filename="${out_dir}/sev_values.txt"
+    sev_string=${sev_string_command} 
+    sev_array=${sev_array_command}
+    round_num=${round_num_command}
+
+    sh_file_string=${sh_file_string_command}
+    sub_str="Round"
+
+    ${sed_command} "${out_dir}/sev_recon_HighE/sh/sev_analyse_high_e.sh"
+
     exit 0
 fi

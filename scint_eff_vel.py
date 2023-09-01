@@ -3,7 +3,7 @@ import sys
 import os
 import utilities
 
-def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial):
+def setup_recon_jobs(job_name, out_dir, infile, e_choice, other_e_input_files, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial):
 
     speeds = utilities.SEVSpeeds
 
@@ -28,13 +28,18 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, su
     macro      = string.Template(open("/home/parkerw/Software/rat-tools_fork/FitCoordination/ScintEffectiveSpeed/Template_Macro_Inroot.mac", "r").read()) #TODO fix this eventually
     dag_splice_text = ""
 
+    if e_choice == "single_energy":
+        file_suffix=""
+    else:
+        file_suffix="high_"
+
     input_file = out_dir + "/" + infile + "/" + infile + "_0.root"
 
     ## Now run these macros over some simulation (with diff velocities)
     for i in speeds:
 
         ## First make the rat macro
-        output_file = "{0}/scintFit_{1}.root".format(job_dir, str(i))
+        output_file = "{0}/scintFit_{1}{2}.root".format(job_dir, file_suffix, str(i))
         if defaultMaterial:
             speed_string = "EFFECTIVE_VELOCITY inner_av_velocity %s" % i
             scaled_string = "EFFECTIVE_VELOCITY scale_inner_av_vel false"
@@ -80,11 +85,18 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, su
         dag_splice_text += dag_splice_line+"\n"
 
     ## Write dag splice to file
-    dag_splice_name = "{0}/dag/sev_recon.spl".format(out_dir)
+    if e_choice == "single_energy":
+        dag_splice_name = "{0}/dag/sev_recon.spl".format(out_dir)
+        analyse_job_name = "sev_analyse"
+        input_files_low_e = "{0}/{1}/".format(out_dir, job_name)
+        input_files_high_e = "{0}/{1}/".format(out_dir, other_e_input_files)
+    else:
+        dag_splice_name  = "{0}/dag/sev_recon_high_e.spl".format(out_dir)
+        analyse_job_name = "sev_analyse_high_e"
+        input_files_low_e = "{0}/{1}/".format(out_dir, other_e_input_files)
+        input_files_high_e = "{0}/{1}/".format(out_dir, job_name)
     with open(dag_splice_name, "w") as dag_splice:
         dag_splice.write(dag_splice_text)
-
-    ## Now run analyse data funcs over these files, in the dag file
 
     ## Make .sh file from template
     template_analyse_filename = "template_analyse_sev.sh"
@@ -92,16 +104,17 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, su
     template_analyse_sh_raw_text = string.Template(template_analyse_sh_file.read())
     analyse_sh_text = template_analyse_sh_raw_text.substitute(env_file=env_file,
                                                               rat_root=rat_root,
-                                                              submission_dir = submission_dir,
-                                                              material = material,
-                                                              input_files = "{0}/{1}/".format(out_dir, job_name),
-                                                              plot_dir = "{0}/plots".format(out_dir),
-                                                              sleep = "$((1 + $RANDOM % 10))",
+                                                              submission_dir=submission_dir,
+                                                              material=material,
+                                                              energy_choice=e_choice,
+                                                              input_files=input_files_low_e,
+                                                              input_files_high=input_files_high_e,
+                                                              plot_dir="{0}/plots".format(out_dir),
+                                                              sleep="$((1 + $RANDOM % 10))",
                                                               out_dir=out_dir,
-                                                              sub_dir=submission_dir)
+                                                              sub_dir=submission_dir
+                                                              )
 
-
-    analyse_job_name = "sev_analyse"
     analyse_sh_name = "{0}/{1}.sh".format(sh_dir, analyse_job_name)
     with open(analyse_sh_name, "w") as analyse_file:
         analyse_file.write(analyse_sh_text)

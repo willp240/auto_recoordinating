@@ -12,7 +12,12 @@ def setup_loop_script(out_dir, material, rat_root, env_file, sub_dir):
                                                            sub_dir=sub_dir,
                                                            rat_root=rat_root,
                                                            material=material,
-                                                           bash_command="if [ $? != 0 ];")
+                                                           bash_command="if [ $? != 0 ];",
+                                                           sev_string_command="$(cat  $filename |tr \"\n\" \" \")",
+                                                           sev_array_command="($sev_string)",
+                                                           round_num_command="$((${#sev_array[@]} - 1))",
+                                                           sh_file_string_command="$(cat ./sev_analyse_high_e.sh)",
+                                                           sed_command="sed -i \"s/$sub_str/$sub_str$round_num/\" ")
     main_loop_filename = "{0}/dag/iterate_loop.sh".format(out_dir)
     with open(main_loop_filename, "w") as main_loop_file:
         main_loop_file.write(template_loop_text)
