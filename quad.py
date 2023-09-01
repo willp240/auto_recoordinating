@@ -3,7 +3,7 @@ import sys
 import os
 import utilities
 
-def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial):
+def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, geo_file, av_shift, defaultMaterial):
 
     speeds = utilities.QuadSpeeds
 
@@ -79,7 +79,14 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, su
     with open(dag_splice_name, "w") as dag_splice:
         dag_splice.write(dag_splice_text)
 
+
+def setup_analyse_jobs(job_name, out_dir, material, rat_root, env_file, submission_dir):
     ## Now run analyse data funcs over these files, in the dag file
+
+    ## Make a condor submit file from template
+    template_condor_filename = "template_condor.sub"
+    template_condor_file = open(template_condor_filename, "r")
+    template_condor_raw_text = string.Template(template_condor_file.read())
 
     ## Make .sh file from template
     template_analyse_filename = "template_analyse_quad.sh"
@@ -93,6 +100,13 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, su
                                                               plot_dir = "{0}/plots".format(out_dir),
                                                               sleep = "$((1 + $RANDOM % 10))")
 
+    ### Setup output directories
+    job_dir    = "{0}/{1}".format(out_dir, job_name)
+    log_dir    = utilities.check_dir("{0}/log/".format(job_dir))
+    error_dir  = utilities.check_dir("{0}/error/".format(job_dir))
+    sh_dir     = utilities.check_dir("{0}/sh/".format(job_dir))
+    submit_dir = utilities.check_dir("{0}/submit/".format(job_dir))
+    output_dir = utilities.check_dir("{0}/output/".format(job_dir))
 
     analyse_sh_name = "{0}/quad_analyse.sh".format(sh_dir)
     with open(analyse_sh_name, "w") as analyse_file:

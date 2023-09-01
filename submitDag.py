@@ -73,10 +73,12 @@ if __name__ == "__main__":
     simulation.setup_jobs("e10p0MeV_Sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0)
 
     ## recoordinate quad first
-    quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_Sim", material, rat_root, env_file, submission_dir, geo_file, av_shift, default_material)
+    quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_Sim", material, rat_root, env_file, geo_file, av_shift, default_material)
+    quad.setup_analyse_jobs("quad_analyse", out_dir, material, rat_root, env_file, submission_dir) 
 
     ## recoordinate scint effective velocities
-    scint_eff_vel.setup_recon_jobs("sev_recon_Round0", out_dir, "e2p5MeV_Sim", "single_energy", "", material, rat_root, env_file, submission_dir, geo_file, av_shift, default_material)
+    scint_eff_vel.setup_recon_jobs("sev_recon_Round0", out_dir, "e2p5MeV_Sim", False, material, rat_root, env_file, submission_dir, geo_file, av_shift, default_material)
+    scint_eff_vel.setup_analyse_jobs("sev_analyse_Round0", out_dir, "single_energy", "sev_recon_Round0", "", material, rat_root, env_file, submission_dir)
 
     ## recoordinate multipdf
     multipdf.setup_recon_jobs("multiPDF_recon_Round0", out_dir, "e2p5MeV_Sim", material, rat_root, env_file, submission_dir)
@@ -84,7 +86,10 @@ if __name__ == "__main__":
     ## script for iterating the scinteffvel and multipdf loop
     loop.setup_loop_script(out_dir, material, rat_root, env_file, submission_dir)
 
-    scint_eff_vel.setup_recon_jobs("sev_recon_HighE", out_dir, "e10p0MeV_Sim", "interpolate", "sev_recon_Round", material, rat_root, env_file, submission_dir, geo_file, av_shift, False)
+    ## now do reconstruct the higher energy files for scaling sev
+    scint_eff_vel.setup_recon_jobs("sev_recon_high_e", out_dir, "e10p0MeV_Sim", True, material, rat_root, env_file, submission_dir, geo_file, av_shift, False)
+    scint_eff_vel.setup_analyse_jobs("sev_analyse_high_e", out_dir, "interpolate", "sev_recon_Round", "sev_recon_high_e", material, rat_root, env_file, submission_dir)
+
 
     sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)
     print(sub_command)

@@ -65,7 +65,8 @@ if __name__ == "__main__":
             exit(0)
 
     ## re-recoordinate scint effective velocities
-    scint_eff_vel.setup_recon_jobs("sev_recon_Round{0}".format(round_num), out_dir, "e2p5MeV_Sim", "single_energy", "", material, rat_root, env_file, submission_dir, geo_file, av_shift, False)
+    scint_eff_vel.setup_recon_jobs("sev_recon_Round{0}".format(round_num), out_dir, "e2p5MeV_Sim", False, material, rat_root, env_file, submission_dir, geo_file, av_shift, False)
+    scint_eff_vel.setup_analyse_jobs("sev_analyse_Round{0}".format(round_num), out_dir, "single_energy", "sev_recon_Round{0}".format(round_num), "", material, rat_root, env_file, submission_dir)
 
     ## recoordinate multipdf
     multipdf.setup_recon_jobs("multiPDF_recon_Round{0}".format(round_num), out_dir, "e2p5MeV_Sim", material, rat_root, env_file, submission_dir)

@@ -3,7 +3,8 @@ import sys
 import os
 import utilities
 
-def setup_recon_jobs(job_name, out_dir, infile, e_choice, other_e_input_files, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial):
+def setup_recon_jobs(job_name, out_dir, infile, high_e, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial):
+
 
     speeds = utilities.SEVSpeeds
 
@@ -28,7 +29,7 @@ def setup_recon_jobs(job_name, out_dir, infile, e_choice, other_e_input_files, m
     macro      = string.Template(open("/home/parkerw/Software/rat-tools_fork/FitCoordination/ScintEffectiveSpeed/Template_Macro_Inroot.mac", "r").read()) #TODO fix this eventually
     dag_splice_text = ""
 
-    if e_choice == "single_energy":
+    if high_e == False:
         file_suffix=""
     else:
         file_suffix="high_"
@@ -85,18 +86,40 @@ def setup_recon_jobs(job_name, out_dir, infile, e_choice, other_e_input_files, m
         dag_splice_text += dag_splice_line+"\n"
 
     ## Write dag splice to file
+    if high_e == False:
+        dag_splice_name = "{0}/dag/sev_recon.spl".format(out_dir)
+    else:
+        dag_splice_name  = "{0}/dag/sev_recon_high_e.spl".format(out_dir)
+
+    with open(dag_splice_name, "w") as dag_splice:
+        dag_splice.write(dag_splice_text)
+
+
+def setup_analyse_jobs(job_name, out_dir, e_choice, low_e_input_files, high_e_input_files, material, rat_root, env_file, submission_dir):
+
+#   # Make a condor submit file from template
+    template_condor_filename = "template_condor.sub"
+    template_condor_file = open(template_condor_filename, "r")
+    template_condor_raw_text = string.Template(template_condor_file.read())
+
+    ### Setup output directories
+    job_dir    = "{0}/{1}".format(out_dir, job_name)
+    log_dir    = utilities.check_dir("{0}/log/".format(job_dir))
+    error_dir  = utilities.check_dir("{0}/error/".format(job_dir))
+    sh_dir     = utilities.check_dir("{0}/sh/".format(job_dir))
+    submit_dir = utilities.check_dir("{0}/submit/".format(job_dir))
+    output_dir = utilities.check_dir("{0}/output/".format(job_dir))
+
+    ## Write dag splice to file
     if e_choice == "single_energy":
         dag_splice_name = "{0}/dag/sev_recon.spl".format(out_dir)
         analyse_job_name = "sev_analyse"
-        input_files_low_e = "{0}/{1}/".format(out_dir, job_name)
-        input_files_high_e = "{0}/{1}/".format(out_dir, other_e_input_files)
     else:
         dag_splice_name  = "{0}/dag/sev_recon_high_e.spl".format(out_dir)
         analyse_job_name = "sev_analyse_high_e"
-        input_files_low_e = "{0}/{1}/".format(out_dir, other_e_input_files)
-        input_files_high_e = "{0}/{1}/".format(out_dir, job_name)
-    with open(dag_splice_name, "w") as dag_splice:
-        dag_splice.write(dag_splice_text)
+
+    input_files_low_e = "{0}/{1}/".format(out_dir, low_e_input_files)
+    input_files_high_e = "{0}/{1}/".format(out_dir, high_e_input_files)
 
     ## Make .sh file from template
     template_analyse_filename = "template_analyse_sev.sh"
