@@ -85,7 +85,10 @@ def setup_recon_jobs(job_name, out_dir, infile, high_e, material, rat_root, env_
         dag_splice_text += dag_splice_line+"\n"
 
     ## Write dag splice to file
-    dag_splice_name = "{0}/dag/{1}.spl".format(out_dir, job_name)
+    if high_e == False:
+        dag_splice_name = "{0}/dag/sev_recon.spl".format(out_dir)
+    else:
+        dag_splice_name = "{0}/dag/sev_recon_high_e.spl".format(out_dir)
 
     with open(dag_splice_name, "w") as dag_splice:
         dag_splice.write(dag_splice_text)
@@ -141,7 +144,10 @@ def setup_analyse_jobs(job_name, out_dir, e_choice, low_e_input_files, high_e_in
         sub_file.write(sub_text)
 
     ## Write dag splice to file
+    if e_choice == "single_energy":
+        dag_splice_name = "{0}/dag/sev_analyse.spl".format(out_dir)
+    else:
+        dag_splice_name = "{0}/dag/sev_analyse_high_e.spl".format(out_dir)
     dag_splice_text = "JOB {0} {1}".format( job_name, sub_name)
-    dag_splice_name = "{0}/dag/{1}.spl".format(out_dir, job_name)
     with open(dag_splice_name, "w") as dag_splice:
         dag_splice.write(dag_splice_text)
