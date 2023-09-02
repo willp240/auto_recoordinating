@@ -9,6 +9,7 @@ import scint_eff_vel
 import multipdf
 import loop
 import db_utilities
+import fit_perf
 import rat
 from ROOT import RAT
 
@@ -68,27 +69,33 @@ if __name__ == "__main__":
     default_material = db_utilities.check_first_sev(material)
 
     ### initial simulation phase
+    simulation.setup_jobs("e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5)
+    simulation.setup_jobs("e10p0MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0)
 
-    simulation.setup_jobs("e2p5MeV_Sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5)
-    simulation.setup_jobs("e10p0MeV_Sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0)
+    ### also the simulation for fit performance tools, may as well start the simulation now
+    simulation.setup_jobs("e2p5MeV_sim_perf",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5)
+    simulation.setup_jobs("e1to10MeV_sim_perf", out_dir, material, rat_root, env_file, geo_file, av_shift, False, 1.0, 10.0)
 
     ## recoordinate quad first
-    quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_Sim", material, rat_root, env_file, geo_file, av_shift, default_material)
+    quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, geo_file, av_shift, default_material)
     quad.setup_analyse_jobs("quad_analyse", out_dir, material, rat_root, env_file, submission_dir) 
 
     ## recoordinate scint effective velocities
-    scint_eff_vel.setup_recon_jobs("sev_recon_Round0", out_dir, "e2p5MeV_Sim", False, material, rat_root, env_file, submission_dir, geo_file, av_shift, default_material)
-    scint_eff_vel.setup_analyse_jobs("sev_analyse_Round0", out_dir, "single_energy", "sev_recon_Round0", "", material, rat_root, env_file, submission_dir)
+    scint_eff_vel.setup_recon_jobs("sev_recon_round0", out_dir, "e2p5MeV_sim", False, material, rat_root, env_file, submission_dir, geo_file, av_shift, default_material)
+    scint_eff_vel.setup_analyse_jobs("sev_analyse_round0", out_dir, "single_energy", "sev_recon_round0", "", material, rat_root, env_file, submission_dir)
 
     ## recoordinate multipdf
-    multipdf.setup_recon_jobs("multiPDF_recon_Round0", out_dir, "e2p5MeV_Sim", material, rat_root, env_file, submission_dir)
+    multipdf.setup_recon_jobs("multiPDF_recon_round0", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir)
 
     ## script for iterating the scinteffvel and multipdf loop
     loop.setup_loop_script(out_dir, material, rat_root, env_file, submission_dir)
 
     ## now do reconstruct the higher energy files for scaling sev
-    scint_eff_vel.setup_recon_jobs("sev_recon_high_e", out_dir, "e10p0MeV_Sim", True, material, rat_root, env_file, submission_dir, geo_file, av_shift, False)
-    scint_eff_vel.setup_analyse_jobs("sev_analyse_high_e", out_dir, "interpolate", "sev_recon_Round", "sev_recon_high_e", material, rat_root, env_file, submission_dir)
+    scint_eff_vel.setup_recon_jobs("sev_recon_high_e", out_dir, "e10p0MeV_sim", True, material, rat_root, env_file, submission_dir, geo_file, av_shift, False)
+    scint_eff_vel.setup_analyse_jobs("sev_analyse_high_e", out_dir, "interpolate", "sev_recon_round", "sev_recon_high_e", material, rat_root, env_file, submission_dir)
+
+    fit_perf.setup_recon_jobs("e2p5MeV_recon_perf", out_dir, "e2p5MeV_recon_perf", material, rat_root, env_file, submission_dir, geo_file, av_shift)
+    fit_perf.setup_recon_jobs("e1to10MeV_recon_perf", out_dir, "e1to10MeV_recon_perf", material, rat_root, env_file, submission_dir, geo_file, av_shift)
 
 
     sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)

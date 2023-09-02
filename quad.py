@@ -114,17 +114,17 @@ def setup_analyse_jobs(job_name, out_dir, material, rat_root, env_file, submissi
     os.chmod(analyse_sh_name, 0o777)
 
     ## And the condor submission macro
-    analyse_job_name = "quad_analyse"
+    job_name = "quad_analyse"
     sub_text = template_condor_raw_text.substitute(sh_file=analyse_sh_name,
-                                                   error_file="{0}/{1}.error".format(error_dir, analyse_job_name),
-                                                   output_file="{0}/{1}.output".format(output_dir, analyse_job_name),
-                                                   log_file="{0}/{1}.log".format(log_dir, analyse_job_name))
-    sub_name = "{0}{1}.sub".format(submit_dir, analyse_job_name)
+                                                   error_file="{0}/{1}.error".format(error_dir, job_name),
+                                                   output_file="{0}/{1}.output".format(output_dir, job_name),
+                                                   log_file="{0}/{1}.log".format(log_dir, job_name))
+    sub_name = "{0}{1}.sub".format(submit_dir, job_name)
     with open(sub_name, "w") as sub_file:
         sub_file.write(sub_text)
 
     ## Write dag splice to file
-    dag_splice_text = "JOB {0} {1}".format( analyse_job_name, sub_name)
-    dag_splice_name = "{0}/dag/{1}.spl".format(out_dir, analyse_job_name)
+    dag_splice_text = "JOB {0} {1}".format(job_name, sub_name)
+    dag_splice_name = "{0}/dag/{1}.spl".format(out_dir, job_name)
     with open(dag_splice_name, "w") as dag_splice:
         dag_splice.write(dag_splice_text)

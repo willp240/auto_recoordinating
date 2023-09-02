@@ -5,7 +5,6 @@ import utilities
 
 def setup_recon_jobs(job_name, out_dir, infile, high_e, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial):
 
-
     speeds = utilities.SEVSpeeds
 
     ## Make a condor submit file from template
@@ -86,10 +85,7 @@ def setup_recon_jobs(job_name, out_dir, infile, high_e, material, rat_root, env_
         dag_splice_text += dag_splice_line+"\n"
 
     ## Write dag splice to file
-    if high_e == False:
-        dag_splice_name = "{0}/dag/sev_recon.spl".format(out_dir)
-    else:
-        dag_splice_name  = "{0}/dag/sev_recon_high_e.spl".format(out_dir)
+    dag_splice_name = "{0}/dag/{1}.spl".format(out_dir, job_name)
 
     with open(dag_splice_name, "w") as dag_splice:
         dag_splice.write(dag_splice_text)
@@ -97,7 +93,7 @@ def setup_recon_jobs(job_name, out_dir, infile, high_e, material, rat_root, env_
 
 def setup_analyse_jobs(job_name, out_dir, e_choice, low_e_input_files, high_e_input_files, material, rat_root, env_file, submission_dir):
 
-#   # Make a condor submit file from template
+    ## Make a condor submit file from template
     template_condor_filename = "template_condor.sub"
     template_condor_file = open(template_condor_filename, "r")
     template_condor_raw_text = string.Template(template_condor_file.read())
@@ -109,14 +105,6 @@ def setup_analyse_jobs(job_name, out_dir, e_choice, low_e_input_files, high_e_in
     sh_dir     = utilities.check_dir("{0}/sh/".format(job_dir))
     submit_dir = utilities.check_dir("{0}/submit/".format(job_dir))
     output_dir = utilities.check_dir("{0}/output/".format(job_dir))
-
-    ## Write dag splice to file
-    if e_choice == "single_energy":
-        dag_splice_name = "{0}/dag/sev_recon.spl".format(out_dir)
-        analyse_job_name = "sev_analyse"
-    else:
-        dag_splice_name  = "{0}/dag/sev_recon_high_e.spl".format(out_dir)
-        analyse_job_name = "sev_analyse_high_e"
 
     input_files_low_e = "{0}/{1}/".format(out_dir, low_e_input_files)
     input_files_high_e = "{0}/{1}/".format(out_dir, high_e_input_files)
@@ -138,22 +126,22 @@ def setup_analyse_jobs(job_name, out_dir, e_choice, low_e_input_files, high_e_in
                                                               sub_dir=submission_dir
                                                               )
 
-    analyse_sh_name = "{0}/{1}.sh".format(sh_dir, analyse_job_name)
+    analyse_sh_name = "{0}/{1}.sh".format(sh_dir, job_name)
     with open(analyse_sh_name, "w") as analyse_file:
         analyse_file.write(analyse_sh_text)
     os.chmod(analyse_sh_name, 0o777)
 
     ## And the condor submission macro
     sub_text = template_condor_raw_text.substitute(sh_file=analyse_sh_name,
-                                                   error_file="{0}/{1}.error".format(error_dir, analyse_job_name),
-                                                   output_file="{0}/{1}.output".format(output_dir, analyse_job_name),
-                                                   log_file="{0}/{1}.log".format(log_dir, analyse_job_name))
-    sub_name = "{0}{1}.sub".format(submit_dir, analyse_job_name)
+                                                   error_file="{0}/{1}.error".format(error_dir, job_name),
+                                                   output_file="{0}/{1}.output".format(output_dir, job_name),
+                                                   log_file="{0}/{1}.log".format(log_dir, job_name))
+    sub_name = "{0}{1}.sub".format(submit_dir, job_name)
     with open(sub_name, "w") as sub_file:
         sub_file.write(sub_text)
 
     ## Write dag splice to file
-    dag_splice_text = "JOB {0} {1}".format( analyse_job_name, sub_name)
-    dag_splice_name = "{0}/dag/{1}.spl".format(out_dir, analyse_job_name)
+    dag_splice_text = "JOB {0} {1}".format( job_name, sub_name)
+    dag_splice_name = "{0}/dag/{1}.spl".format(out_dir, job_name)
     with open(dag_splice_name, "w") as dag_splice:
         dag_splice.write(dag_splice_text)
