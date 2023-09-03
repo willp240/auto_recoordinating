@@ -23,23 +23,18 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, su
     sh_dir     = utilities.check_dir("{0}/sh/".format(job_dir))
     submit_dir = utilities.check_dir("{0}/submit/".format(job_dir))
     output_dir = utilities.check_dir("{0}/output/".format(job_dir))
-    macro      = string.Template(open("/home/parkerw/Software/rat-tools_fork/FitCoordination/ScintEffectiveSpeed/Template_Macro_Inroot.mac", "r").read()) #TODO fix this eventually
+    macro      = string.Template(open("{0}/fit_perf_recon.mac".format(submission_dir), "r").read()) #TODO fix this eventually
     dag_splice_text = ""
 
     input_file = out_dir + "/" + infile + "/" + infile + "_0.root"
+
 
     ## Now loop over number of jobs to run
     for i in range(5):
 
         ## First make the rat macro
         output_file = "{0}/{1}_{2}.root".format(job_dir, job_name, i)
-        macro_text = macro.substitute(ExtraDB="",
-                                      ThinFactor=1.0,
-                                      GeoFile=geo_file,
-                                      ScintMaterial=material,
-                                      SpeedDB="",
-                                      ScaledDB="",
-                                      AVShift=av_shift,
+        macro_text = macro.substitute(AVShift=av_shift,
                                       InputFileName=input_file,
                                       FileName=output_file)
         macro_name = "{0}/{1}_{2}.mac".format(mac_dir, job_name, i)

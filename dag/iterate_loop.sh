@@ -16,7 +16,7 @@ else
     round_num=${round_num_command}
 
     sh_file_string=${sh_file_string_command}
-    sub_str="Round"
+    sub_str="round"
 
     ${sed_command} "${out_dir}/sev_analyse_high_e/sh/sev_analyse_high_e.sh"
 

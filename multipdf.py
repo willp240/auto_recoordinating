@@ -48,6 +48,6 @@ def setup_recon_jobs(job_name, out_dir, input_file, material, rat_root, env_file
 
     ## Write dag splice to file
     dag_splice_text = "JOB {0} {1}".format( job_name, sub_name)
-    dag_splice_name = "{0}/dag/{1}.spl".format(out_dir, job_name)
+    dag_splice_name = "{0}/dag/multipdf_recon.spl".format(out_dir)
     with open(dag_splice_name, "w") as dag_splice:
         dag_splice.write(dag_splice_text)

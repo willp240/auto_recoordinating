@@ -73,8 +73,8 @@ if __name__ == "__main__":
     simulation.setup_jobs("e10p0MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0)
 
     ### also the simulation for fit performance tools, may as well start the simulation now
-    simulation.setup_jobs("e2p5MeV_sim_perf",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5)
-    simulation.setup_jobs("e1to10MeV_sim_perf", out_dir, material, rat_root, env_file, geo_file, av_shift, False, 1.0, 10.0)
+    simulation.setup_jobs("perf_e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5)
+    simulation.setup_jobs("perf_e1to10MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, False, 1.0, 10.0)
 
     ## recoordinate quad first
     quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, geo_file, av_shift, default_material)
@@ -94,8 +94,8 @@ if __name__ == "__main__":
     scint_eff_vel.setup_recon_jobs("sev_recon_high_e", out_dir, "e10p0MeV_sim", True, material, rat_root, env_file, submission_dir, geo_file, av_shift, False)
     scint_eff_vel.setup_analyse_jobs("sev_analyse_high_e", out_dir, "interpolate", "sev_recon_round", "sev_recon_high_e", material, rat_root, env_file, submission_dir)
 
-    fit_perf.setup_recon_jobs("e2p5MeV_recon_perf", out_dir, "e2p5MeV_recon_perf", material, rat_root, env_file, submission_dir, geo_file, av_shift)
-    fit_perf.setup_recon_jobs("e1to10MeV_recon_perf", out_dir, "e1to10MeV_recon_perf", material, rat_root, env_file, submission_dir, geo_file, av_shift)
+    fit_perf.setup_recon_jobs("perf_e2p5MeV_recon", out_dir, "perf_e2p5MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
+    fit_perf.setup_recon_jobs("perf_e1to10MeV_recon", out_dir, "perf_e1to10MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
 
 
     sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)

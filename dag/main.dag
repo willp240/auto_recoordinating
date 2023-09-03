@@ -1,8 +1,8 @@
 SPLICE e2p5MeV_sim                            ${dag_dir}/e2p5MeV_sim.spl
 SPLICE e10p0MeV_sim                           ${dag_dir}/e10p0MeV_sim.spl
 
-SPLICE e2p5MeV_sim_perf                       ${dag_dir}/e2p5MeV_sim_perf.spl
-SPLICE e1to10MeV_sim_perf                     ${dag_dir}/e1to10MeV_sim_perf.spl
+SPLICE perf_e2p5MeV_sim                       ${dag_dir}/perf_e2p5MeV_sim.spl
+SPLICE perf_e1to10MeV_sim                     ${dag_dir}/perf_e1to10MeV_sim.spl
 
 SPLICE quad_recon                             ${dag_dir}/quad_recon.spl
 SPLICE quad_analyse                           ${dag_dir}/quad_analyse.spl
@@ -14,8 +14,8 @@ RETRY  sev_mpdf_loop                          3
 SPLICE sev_recon_high_e                       ${dag_dir}/sev_recon_high_e.spl
 SPLICE sev_analyse_high_e                     ${dag_dir}/sev_analyse_high_e.spl
 
-SPLICE e2p5MeV_recon_perf                     ${dag_dir}/e2p5MeV_recon_perf.spl
-SPLICE e1to10MeV_recon_perf                   ${dag_dir}/e1to10MeV_recon_perf.spl
+SPLICE perf_e2p5MeV_recon                     ${dag_dir}/perf_e2p5MeV_recon.spl
+SPLICE perf_e1to10MeV_recon                   ${dag_dir}/perf_e1to10MeV_recon.spl
 
 PARENT e2p5MeV_sim                            CHILD quad_recon
 
@@ -25,5 +25,5 @@ PARENT quad_analyse                           CHILD sev_mpdf_loop
 PARENT sev_mpdf_loop            e10p0MeV_sim  CHILD sev_recon_high_e
 PARENT sev_recon_high_e                       CHILD sev_analyse_high_e
 
-PARENT e2p5MeV_sim_perf   sev_analyse_high_e  CHILD e2p5MeV_recon_perf
-PARENT e1to10MeV_sim_perf sev_analyse_high_e  CHILD e1to10MeV_recon_perf
+PARENT perf_e2p5MeV_sim   sev_analyse_high_e  CHILD perf_e2p5MeV_recon
+PARENT perf_e1to10MeV_sim sev_analyse_high_e  CHILD perf_e1to10MeV_recon
