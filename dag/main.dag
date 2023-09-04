@@ -17,6 +17,9 @@ SPLICE sev_analyse_high_e                     ${dag_dir}/sev_analyse_high_e.spl
 SPLICE perf_e2p5MeV_recon                     ${dag_dir}/perf_e2p5MeV_recon.spl
 SPLICE perf_e1to10MeV_recon                   ${dag_dir}/perf_e1to10MeV_recon.spl
 
+SPLICE perf_e2p5MeV_tools                     ${dag_dir}/perf_e2p5MeV_tools.spl
+SPLICE perf_e1to10MeV_tools                   ${dag_dir}/perf_e1to10MeV_tools.spl
+
 PARENT e2p5MeV_sim                            CHILD quad_recon
 
 PARENT quad_recon                             CHILD quad_analyse
@@ -27,3 +30,6 @@ PARENT sev_recon_high_e                       CHILD sev_analyse_high_e
 
 PARENT perf_e2p5MeV_sim   sev_analyse_high_e  CHILD perf_e2p5MeV_recon
 PARENT perf_e1to10MeV_sim sev_analyse_high_e  CHILD perf_e1to10MeV_recon
+
+PARENT perf_e2p5MeV_recon                     CHILD perf_e2p5MeV_tools
+PARENT perf_e1to10MeV_recon                   CHILD perf_e1to10MeV_tools

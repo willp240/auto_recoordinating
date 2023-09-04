@@ -32,7 +32,7 @@ def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shi
     dag_splice_text = ""
 
     ## Now loop over number of jobs to run
-    for i in range(5):
+    for i in range(20):
 
         ## First make the rat macro
         output_file = "{0}/{1}_{2}.root".format(job_dir, job_name, i)

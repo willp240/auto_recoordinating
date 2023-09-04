@@ -94,9 +94,11 @@ if __name__ == "__main__":
     scint_eff_vel.setup_recon_jobs("sev_recon_high_e", out_dir, "e10p0MeV_sim", True, material, rat_root, env_file, submission_dir, geo_file, av_shift, False)
     scint_eff_vel.setup_analyse_jobs("sev_analyse_high_e", out_dir, "interpolate", "sev_recon_round", "sev_recon_high_e", material, rat_root, env_file, submission_dir)
 
-    fit_perf.setup_recon_jobs("perf_e2p5MeV_recon", out_dir, "perf_e2p5MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
-    fit_perf.setup_recon_jobs("perf_e1to10MeV_recon", out_dir, "perf_e1to10MeV_sim", material, rat_root, env_file, submission_dir, geo_file, av_shift)
+    fit_perf.setup_recon_jobs("perf_e2p5MeV_recon", out_dir, "perf_e2p5MeV_sim", rat_root, env_file, submission_dir, av_shift)
+    fit_perf.setup_recon_jobs("perf_e1to10MeV_recon", out_dir, "perf_e1to10MeV_sim", rat_root, env_file, submission_dir, av_shift)
 
+    fit_perf.setup_tools_jobs("perf_e2p5MeV_tools", out_dir, "perf_e2p5MeV_recon", env_file, submission_dir, ["r", "z"])
+    fit_perf.setup_tools_jobs("perf_e1to10MeV_tools", out_dir, "perf_e1to10MeV_recon", env_file, submission_dir, ["r", "z", "e"])
 
     sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)
     print(sub_command)

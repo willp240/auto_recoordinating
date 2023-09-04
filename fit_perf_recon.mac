@@ -1,0 +1,21 @@
+
+${AVShift}
+
+/rat/inroot/load ${InputFileName}
+
+/run/initialize
+
+/rat/proc fitter
+/rat/procset method "quad"
+/rat/proc fitter
+/rat/procset method "multipdf-scint"
+/rat/procset seed "quad"
+/rat/procset selector "null"
+/rat/procset name "positionTimeFit"
+/rat/proc prune
+/rat/procset prune "mc.hits,mc.pmts.photons"
+/rat/proc outroot
+/rat/procset file "${FileName}"
+
+/rat/inroot/read
+exit
