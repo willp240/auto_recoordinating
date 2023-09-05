@@ -28,12 +28,14 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, ge
     macro      = string.Template(open("/home/parkerw/Software/rat-tools_fork/FitCoordination/QuadSpeed/Template_Macro_Inroot.mac", "r").read()) #TODO fix this eventually
     dag_splice_text = ""
 
-    count = 0
+    input_file = ""
+    input_command = ""
+    for infile_num in range(5):
+        input_file += input_command + " " + out_dir + "/" + infile + "/" + infile + "_" + str(infile_num) + ".root\n"
+        input_command = "/rat/inroot/load"
+
     ## Now run these macros over some simulation (with diff velocities)
     for i in speeds:
-            
-        input_file = out_dir + "/" + infile + "/" + infile + "_" + str(count) + ".root"
-        count += 1
 
         ## First make the rat macro
         output_file = "{0}/quadFit_{1}.root".format(job_dir, str(int(i)))
@@ -82,7 +84,7 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, ge
         dag_splice.write(dag_splice_text)
 
 
-def setup_analyse_jobs(job_name, out_dir, material, rat_root, env_file, submission_dir):
+def setup_analyse_jobs(job_name, in_dir, out_dir, material, rat_root, env_file, submission_dir):
     ## Now run analyse data funcs over these files, in the dag file
 
     ## Make a condor submit file from template
@@ -98,7 +100,7 @@ def setup_analyse_jobs(job_name, out_dir, material, rat_root, env_file, submissi
                                                               rat_root=rat_root,
                                                               submission_dir = submission_dir,
                                                               material = material,
-                                                              input_files = "{0}/{1}/".format(out_dir, job_name),
+                                                              input_files = "{0}/{1}/".format(out_dir, in_dir),
                                                               plot_dir = "{0}/plots".format(out_dir),
                                                               sleep = "$((1 + $RANDOM % 10))")
 

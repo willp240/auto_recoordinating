@@ -33,7 +33,11 @@ def setup_recon_jobs(job_name, out_dir, infile, high_e, material, rat_root, env_
     else:
         file_suffix="high_"
 
-    input_file = out_dir + "/" + infile + "/" + infile + "_*0.root"
+    input_file = ""
+    input_command = ""
+    for infile_num in range(10):
+        input_file += input_command + " " + out_dir + "/" + infile + "/" + infile + "_" + str(infile_num) + ".root\n"
+        input_command = "/rat/inroot/load"
 
     ## Now run these macros over some simulation (with diff velocities)
     for i in speeds:

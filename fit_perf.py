@@ -93,7 +93,7 @@ def setup_tools_jobs(job_name, out_dir, in_dir, env_file, submission_dir, coord_
     output_dir = utilities.check_dir("{0}/output/".format(job_dir))
     dag_splice_text = ""
 
-    input_files = out_dir + "/" + in_dir + "/*.root"
+    input_files = "\"" + out_dir + "/" + in_dir + "/*.root\""
 
     ## Now loop over number of jobs to run
     for coord in coord_list:
