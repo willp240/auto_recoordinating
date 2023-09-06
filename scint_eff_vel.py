@@ -29,9 +29,9 @@ def setup_recon_jobs(job_name, out_dir, infile, high_e, material, rat_root, env_
     dag_splice_text = ""
 
     if high_e == False:
-        file_suffix=""
+        file_prefix=""
     else:
-        file_suffix="high_"
+        file_prefix="highE_"
 
     file_count = 0
     ## Now run these macros over some simulation (with diff velocities)
@@ -45,7 +45,7 @@ def setup_recon_jobs(job_name, out_dir, infile, high_e, material, rat_root, env_
             file_count += 1
 
         ## First make the rat macro
-        output_file = "{0}/scintFit_{1}{2}.root".format(job_dir, file_suffix, str(i))
+        output_file = "{0}/{1}scintFit_{2}.root".format(job_dir, file_prefix, str(i))
         if defaultMaterial:
             speed_string = "EFFECTIVE_VELOCITY inner_av_velocity %s" % i
             scaled_string = "EFFECTIVE_VELOCITY scale_inner_av_vel false"
