@@ -28,14 +28,16 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, ge
     macro      = string.Template(open("/home/parkerw/Software/rat-tools_fork/FitCoordination/QuadSpeed/Template_Macro_Inroot.mac", "r").read()) #TODO fix this eventually
     dag_splice_text = ""
 
-    input_file = ""
-    input_command = ""
-    for infile_num in range(5):
-        input_file += input_command + " " + out_dir + "/" + infile + "/" + infile + "_" + str(infile_num) + ".root\n"
-        input_command = "/rat/inroot/load"
-
+    file_count = 0
     ## Now run these macros over some simulation (with diff velocities)
     for i in speeds:
+
+        input_file = ""
+        input_command = ""
+        for infile_num in range(5):
+            input_file += input_command + " " + out_dir + "/" + infile + "/" + infile + "_" + str(file_count) + ".root\n"
+            input_command = "/rat/inroot/load"
+            file_count += 1
 
         ## First make the rat macro
         output_file = "{0}/quadFit_{1}.root".format(job_dir, str(int(i)))

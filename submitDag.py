@@ -69,12 +69,13 @@ if __name__ == "__main__":
     default_material = db_utilities.check_first_sev(material)
 
     ### initial simulation phase
-    simulation.setup_jobs("e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5)
-    simulation.setup_jobs("e10p0MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0)
+    simulation.setup_jobs("e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5, 0, 0, 4000)
+    simulation.setup_jobs("e10p0MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0, 0, 0, 4000)
 
     ### also the simulation for fit performance tools, may as well start the simulation now
-    simulation.setup_jobs("perf_e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5)
-    simulation.setup_jobs("perf_e1to10MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, False, 1.0, 10.0)
+    simulation.setup_jobs("perf_e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5, 0, 0, 6000)
+    simulation.setup_jobs("perf_e1to10MeV_r4m_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, False, 1.0, 10.0, 0, 4000)
+    simulation.setup_jobs("perf_e1to10MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0, 0, 0, 6000)
 
     ## recoordinate quad first
     quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, geo_file, av_shift, default_material)
@@ -97,8 +98,11 @@ if __name__ == "__main__":
     fit_perf.setup_recon_jobs("perf_e2p5MeV_recon", out_dir, "perf_e2p5MeV_sim", rat_root, env_file, submission_dir, av_shift)
     fit_perf.setup_recon_jobs("perf_e1to10MeV_recon", out_dir, "perf_e1to10MeV_sim", rat_root, env_file, submission_dir, av_shift)
 
-    fit_perf.setup_tools_jobs("perf_e2p5MeV_tools", out_dir, "perf_e2p5MeV_recon", env_file, submission_dir, ["r", "z"])
-    fit_perf.setup_tools_jobs("perf_e1to10MeV_tools", out_dir, "perf_e1to10MeV_recon", env_file, submission_dir, ["r", "z", "e"])
+    fit_perf.setup_tools_jobs("perf_e2p5MeV_tools", out_dir, "perf_e2p5MeV_recon", env_file, submission_dir, "r")
+    fit_perf.setup_tools_jobs("perf_e2p5MeV_tools", out_dir, "perf_e2p5MeV_recon", env_file, submission_dir, "z")
+    fit_perf.setup_tools_jobs("perf_e1to10MeV_tools", out_dir, "perf_e1to10MeV_recon", env_file, submission_dir, "r")
+    fit_perf.setup_tools_jobs("perf_e1to10MeV_tools", out_dir, "perf_e1to10MeV_recon", env_file, submission_dir, "z")
+    fit_perf.setup_tools_jobs("perf_e1to10MeV_tools", out_dir, "perf_e1to10MeV_r4m_sim", env_file, submission_dir, "e")
 
     sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)
     print(sub_command)

@@ -3,7 +3,7 @@ import sys
 import os
 import utilities
 
-def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shift, fixed_energy, energy, energy_high=10):
+def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shift, fixed_energy, energy, energy_high=10, r_min=0, r_max=4000):
 
     ## Make a condor submit file from template
     template_condor_filename = "template_condor.sub"
@@ -32,7 +32,7 @@ def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shi
     dag_splice_text = ""
 
     ## Now loop over number of jobs to run
-    for i in range(20):
+    for i in range(100):
 
         ## First make the rat macro
         output_file = "{0}/{1}_{2}.root".format(job_dir, job_name, i)
@@ -42,7 +42,9 @@ def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shi
                                       GeoFile=geo_file,
                                       AVShift=av_shift,
                                       FileName=output_file,
-                                      Energy=energy_string)
+                                      Energy=energy_string,
+                                      R_Min=str(r_min),
+                                      R_Max=str(r_max))
         macro_name = "{0}/{1}_{2}.mac".format(mac_dir, job_name, i)
         with open(macro_name, "w") as macro_file:
             macro_file.write(macro_text)

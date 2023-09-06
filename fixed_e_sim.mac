@@ -30,8 +30,8 @@ ${AVShift}
 
 /generator/add combo gun:fillshell
 /generator/vtx/set e- 0 0 0 ${Energy} 
-/generator/pos/set 0 0 0 0 0 0 0 4000
+/generator/pos/set 0 0 0 0 0 0 ${R_Min} ${R_Max}
 /generator/rate/set 1
 
-/rat/run/start 1
+/rat/run/start 1000
 exit
