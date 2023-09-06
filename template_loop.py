@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
         pc_diff = 100 * abs(curr_val-float(prev_val)) / float(prev_val)
 
-        if ( pc_diff < 100 ): 
+        if ( pc_diff < 0.05 ): 
             exit(0)
 
     ## re-recoordinate scint effective velocities
