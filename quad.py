@@ -34,7 +34,7 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, ge
 
         input_file = ""
         input_command = ""
-        for infile_num in range(5):
+        for infile_num in range(1):
             input_file += input_command + " " + out_dir + "/" + infile + "/" + infile + "_" + str(file_count) + ".root\n"
             input_command = "/rat/inroot/load"
             file_count += 1
