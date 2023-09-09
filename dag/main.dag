@@ -10,7 +10,7 @@ SPLICE quad_analyse                                     ${dag_dir}/quad_analyse.
 
 SUBDAG EXTERNAL                 sev_mpdf_loop           ${dag_dir}/loop_sub.dag
 SCRIPT POST                     sev_mpdf_loop           ${dag_dir}/iterate_loop.sh
-RETRY  sev_mpdf_loop                                    3
+RETRY  sev_mpdf_loop                                    10
 
 SPLICE sev_recon_high_e                                 ${dag_dir}/sev_recon_high_e.spl
 SPLICE sev_analyse_high_e                               ${dag_dir}/sev_analyse_high_e.spl
