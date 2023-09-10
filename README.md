@@ -12,4 +12,6 @@ After the ScintEffVel/MPDF loop a script is run to see if the velocity has conve
 
 Once covnergence is reached, ScintEffVel is also recoordinated at a higher energy (10 MeV) to recoordinate the interpolation by nhits.
 
+Plots from each stage of the recoordination processes are automatically made and saved.
+
 Finally, fit performance tools are ran for 2.5MeV e-, plotting in r and z, and 1-10 MeV e-, plotting on r, z, and e (only using events with R < 4m for e)
