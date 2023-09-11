@@ -6,6 +6,7 @@ QuadSpeeds = [175.0, 180.0, 185.0, 190.0, 195.0, 200.0, 205.0 ]
 sev_files_per_velocity = 10
 quad_files_per_velocity = 1
 sim_num_events = 200
+convergence_criteria = 0.05 
 
 
 def check_dir(dname):
