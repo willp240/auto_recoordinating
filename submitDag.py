@@ -1,4 +1,6 @@
 import sys
+sys.path.append("./job_sub")
+sys.path.append("./utils")
 import os
 import string
 import argparse
@@ -21,7 +23,7 @@ if __name__ == "__main__":
                         help='path to environment file',
                         default="/path/to/environment/env.sh")
     parser.add_argument("-s", "--submission_directory", type=str,
-                       default="/path/to/this/repository/rat_submission/",
+                       default="/path/to/this/repository/rat-tools/FitCoordination/auto_recoordination",
                        help="path to the directory this file is in, for outputs and inputs")
     parser.add_argument("-r", "--rat_root", type=str,
                        default="/path/to/rat/",
@@ -31,10 +33,10 @@ if __name__ == "__main__":
                        help="which material are we recoordinating for?")
     parser.add_argument("-g", "--geo_file", type=str, 
                         default = "geo/snoplusnative.geo",
-                        help = "Geometry file to use - location relative to rat/data/")
+                        help = "geometry file to use - location relative to rat/data/")
     parser.add_argument("-x", "--extraAVShift", type=str, 
                         default = "",
-                        help = "Set z coordinate of AV centre. Overwrites shift set in geo file")
+                        help = "set z coordinate of AV centre. Overwrites shift set in geo file")
     args = parser.parse_args()
 
     ## Check if output and condor directories exist, create if they don't

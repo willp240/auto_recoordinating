@@ -1,7 +1,9 @@
 import sys
-import os
-import string
+#import os
+#import string
 import argparse
+sys.path.append("./job_sub/")
+sys.path.append("./utils/")
 import utilities
 import scint_eff_vel
 import multipdf

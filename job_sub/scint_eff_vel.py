@@ -1,5 +1,5 @@
 import string
-import sys
+#import sys
 import os
 import utilities
 
@@ -8,12 +8,12 @@ def setup_recon_jobs(job_name, out_dir, infile, high_e, material, rat_root, env_
     speeds = utilities.SEVSpeeds
 
     ## Make a condor submit file from template
-    template_condor_filename = "template_condor.sub"
+    template_condor_filename = "template_files/template_condor.sub"
     template_condor_file = open(template_condor_filename, "r")
     template_condor_raw_text = string.Template(template_condor_file.read())
 
     ## Make .sh file from template
-    template_sh_filename = "template.sh"
+    template_sh_filename = "template_files/template.sh"
     template_sh_file = open(template_sh_filename, "r")
     template_sh_raw_text = string.Template(template_sh_file.read())
 
@@ -103,7 +103,7 @@ def setup_recon_jobs(job_name, out_dir, infile, high_e, material, rat_root, env_
 def setup_analyse_jobs(job_name, out_dir, e_choice, low_e_input_files, high_e_input_files, material, rat_root, env_file, submission_dir):
 
     ## Make a condor submit file from template
-    template_condor_filename = "template_condor.sub"
+    template_condor_filename = "template_files/template_condor.sub"
     template_condor_file = open(template_condor_filename, "r")
     template_condor_raw_text = string.Template(template_condor_file.read())
 
@@ -119,7 +119,7 @@ def setup_analyse_jobs(job_name, out_dir, e_choice, low_e_input_files, high_e_in
     input_files_high_e = "{0}/{1}/".format(out_dir, high_e_input_files)
 
     ## Make .sh file from template
-    template_analyse_filename = "template_analyse_sev.sh"
+    template_analyse_filename = "template_files/template_analyse_sev.sh"
     template_analyse_sh_file = open(template_analyse_filename, "r")
     template_analyse_sh_raw_text = string.Template(template_analyse_sh_file.read())
     analyse_sh_text = template_analyse_sh_raw_text.substitute(env_file=env_file,

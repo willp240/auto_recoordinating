@@ -1,7 +1,7 @@
 import string
-import sys
+#import sys
 import os
-import utilities
+#import utilities
 
 def setup_loop_script(out_dir, material, rat_root, env_file, sub_dir):
 

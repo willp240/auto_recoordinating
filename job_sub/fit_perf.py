@@ -1,17 +1,17 @@
 import string
-import sys
+#import sys
 import os
 import utilities
 
 def setup_recon_jobs(job_name, out_dir, infile, rat_root, env_file, submission_dir, av_shift):
 
     ## Make a condor submit file from template
-    template_condor_filename = "template_condor.sub"
+    template_condor_filename = "template_files/template_condor.sub"
     template_condor_file = open(template_condor_filename, "r")
     template_condor_raw_text = string.Template(template_condor_file.read())
 
     ## Make .sh file from template
-    template_sh_filename = "template.sh"
+    template_sh_filename = "template_files/template.sh"
     template_sh_file = open(template_sh_filename, "r")
     template_sh_raw_text = string.Template(template_sh_file.read())
 
@@ -23,11 +23,11 @@ def setup_recon_jobs(job_name, out_dir, infile, rat_root, env_file, submission_d
     sh_dir     = utilities.check_dir("{0}/sh/".format(job_dir))
     submit_dir = utilities.check_dir("{0}/submit/".format(job_dir))
     output_dir = utilities.check_dir("{0}/output/".format(job_dir))
-    macro      = string.Template(open("{0}/fit_perf_recon.mac".format(submission_dir), "r").read()) #TODO fix this eventually
+    macro      = string.Template(open("{0}/rat_mac/fit_perf_recon.mac".format(submission_dir), "r").read()) #TODO fix this eventually
     dag_splice_text = ""
 
     ## Now loop over number of jobs to run
-    for i in range(200):
+    for i in range(utilities.sim_num_files):
 
         input_file = out_dir + "/" + infile + "/" + infile + "_" + str(i) + ".root"
 
@@ -75,12 +75,12 @@ def setup_recon_jobs(job_name, out_dir, infile, rat_root, env_file, submission_d
 def setup_tools_jobs(job_name, out_dir, in_dir, env_file, submission_dir, coord):
 
     ## Make a condor submit file from template
-    template_condor_filename = "template_condor.sub"
+    template_condor_filename = "template_files/template_condor.sub"
     template_condor_file = open(template_condor_filename, "r")
     template_condor_raw_text = string.Template(template_condor_file.read())
 
     ## Make .sh file from template
-    template_sh_filename = "template_tools.sh"
+    template_sh_filename = "template_files/template_tools.sh"
     template_sh_file = open(template_sh_filename, "r")
     template_sh_raw_text = string.Template(template_sh_file.read())
 
@@ -94,8 +94,6 @@ def setup_tools_jobs(job_name, out_dir, in_dir, env_file, submission_dir, coord)
     dag_splice_text = ""
 
     input_files = "\"" + out_dir + "/" + in_dir + "/*.root\""
-
-    ## First make the rat macro
     output_file = "{0}/{1}_{2}.root".format(job_dir, job_name, coord)
 
     ## And make the sh file to run

@@ -1,12 +1,12 @@
 import string
-import sys
+#import sys
 import os
 import utilities
 
 def setup_recon_jobs(job_name, out_dir, input_file, material, rat_root, env_file, submission_dir):
 
     ## Make a condor submit file from template
-    template_condor_filename = "template_condor.sub"
+    template_condor_filename = "template_files/template_condor.sub"
     template_condor_file = open(template_condor_filename, "r")
     template_condor_raw_text = string.Template(template_condor_file.read())
 
@@ -21,7 +21,7 @@ def setup_recon_jobs(job_name, out_dir, input_file, material, rat_root, env_file
     ## Now run analyse data funcs over these files, in the dag file
 
     ## Make .sh file from template
-    template_analyse_filename = "template_analyse_mpdf.sh"
+    template_analyse_filename = "template_files/template_analyse_mpdf.sh"
     template_analyse_sh_file = open(template_analyse_filename, "r")
     template_analyse_sh_raw_text = string.Template(template_analyse_sh_file.read())
     analyse_sh_text = template_analyse_sh_raw_text.substitute(env_file=env_file,

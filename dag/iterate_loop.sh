@@ -3,7 +3,9 @@
 source ${env_file}
 source ${rat_root}/env.sh
 
-python ${sub_dir}/template_loop.py -e ${env_file} -s ${sub_dir} -r ${rat_root} -m ${material} ${out_dir}
+cd ${sub_dir}
+
+python ${sub_dir}/job_sub/iterate_loop.py -e ${env_file} -s ${sub_dir} -r ${rat_root} -m ${material} ${out_dir}
 
 ${bash_command}
 then
