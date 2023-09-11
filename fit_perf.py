@@ -27,7 +27,7 @@ def setup_recon_jobs(job_name, out_dir, infile, rat_root, env_file, submission_d
     dag_splice_text = ""
 
     ## Now loop over number of jobs to run
-    for i in range(100):
+    for i in range(200):
 
         input_file = out_dir + "/" + infile + "/" + infile + "_" + str(i) + ".root"
 
