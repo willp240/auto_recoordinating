@@ -18,7 +18,7 @@ from ROOT import RAT
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser("Launch jobs for recoordinating position fitters")
-    parser.add_argument('out_dir', type=str, help='directory to place reprocessed files')
+    parser.add_argument('out_dir', type=str, help='Directory to place reprocessed files')
     parser.add_argument('-e', '--env_file', type=str,
                         help='Path to environment file',
                         default="/path/to/environment/env.sh")
