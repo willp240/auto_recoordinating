@@ -74,13 +74,13 @@ if __name__ == "__main__":
     ## Now going to write the dag files and job submission scripts
 
     ## Initial simulation 
-    simulation.setup_jobs("e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5, 0, 0, 4000)
-    simulation.setup_jobs("e10p0MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0, 0, 0, 4000)
+    simulation.setup_jobs("e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, utilities.sim_num_files, True, 2.5, 0, 0, 4000)
+    simulation.setup_jobs("e10p0MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, utilities.sev_files_per_velocity*len(utilities.SEVSpeeds), True, 10.0, 0, 0, 4000)
 
     ## Also the simulation for fit performance tools, may as well start the simulation now
-    simulation.setup_jobs("perf_e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, True, 2.5, 0, 0, 6000)
-    simulation.setup_jobs("perf_e1to10MeV_r4m_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, False, 1.0, 10.0, 0, 4000)
-    simulation.setup_jobs("perf_e1to10MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, True, 10.0, 0, 0, 6000)
+    simulation.setup_jobs("perf_e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, utilities.sim_num_files, True, 2.5, 0, 0, 6000)
+    simulation.setup_jobs("perf_e1to10MeV_r4m_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, utilities.sim_num_files, False, 1.0, 10.0, 0, 4000)
+    simulation.setup_jobs("perf_e1to10MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, utilities.sim_num_files, True, 10.0, 0, 0, 6000)
 
     ## Recoordinate quad first
     quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, geo_file, av_shift, default_material)

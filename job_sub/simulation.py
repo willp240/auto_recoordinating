@@ -7,7 +7,7 @@ import utilities
 ### Writes the submission scripts and dag splices for running e- simulation jobs
 ### If fixed energy is true, e- have energy given by argument "energy"
 ### Otherwise they are uniform in range "energy" to "energy_high"
-def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shift, fixed_energy, energy, energy_high=10, r_min=0, r_max=4000):
+def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shift, num_files, fixed_energy, energy, energy_high=10, r_min=0, r_max=4000):
 
     ## Make a condor submit file from template
     template_condor_filename = "template_files/template_condor.sub"
@@ -37,7 +37,7 @@ def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shi
     dag_splice_text = ""
 
     ## Now loop over number of jobs to run
-    for i in range(utilities.sim_num_files):
+    for i in range(num_files):
 
         ## First make the rat macro
         output_file = "{0}/{1}_{2}.root".format(job_dir, job_name, i)
