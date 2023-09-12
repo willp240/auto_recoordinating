@@ -42,3 +42,11 @@ After the `MultiPDF-ScintEffectiveVelocity` loop, a script is run to see if the 
 Plots from each stage of the recoordination processes are automatically made and saved using the `FitCoordinationsTools` options to do so.
 
 Finally, `FitPerformanceTools` are ran for 2.5MeV e-, plotting in `r` and `z`, and 1-10 MeV e-, plotting on `r`, `z`, and `e` (only using events with `R < 4m` for `e`).
+
+## Iteration Problems
+
+As described, the `MultiPDF-ScintEffectiveVelocity` loop is iterated by running a 'post script' after the loop subdag. This post script is not submitted as a Condor job, but also isn't run on the interactive machine you submit from. On this 'no-man's-land' node, I had problems running or importing rat. Without being able to recreate the problem on interactive machines, it was difficult to debug. Perhaps I could have spent more time investigating what node I was on, what was already installed there, and why there was an issue (I suspect it was different version installs clashing), but instead invoked some pragmatic but inelegant workarounds. 
+
+In this post script we want to compare the new `ScintEffectiveVelocity` to the previous round's. Without being able to import rat, I was not able to just read the current value from the ratdb file in the normal way (like in `utils/db_utilities.py`). Instead, I write each new effective velocity to a text file in the output directory. This is maybe not the end of the world, as I would have needed a way to get the previous value at this stage anyway, and it's nice to be able to immediately see how the velocity has progressed in one place.
+
+We also want to be able to overwrite the loop splices in this script, so that when the loop is retried we don't write to the same place. For this, we need to know the `ScintEffectiveVelocities` to run over. But we can't just call `ScintEffectiveSpeed/SEVUtilities.Speeds`, as `ScintEffectiveSpeed/SEVUtilities` will want to import rat. Instead, I hard code the velocities into `./utils/utilities`. This is not ideal as it means if we change the velocities in `ScintEffectiveSpeed/SEVUtilities` we have to make the same change here. Maybe a better way would be to at the very start (in `submitDag.py`) write the velocities to another text file, and then we can just read them when we need them. But this also feels a bit clumsy
