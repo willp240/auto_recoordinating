@@ -1,10 +1,13 @@
 import string
-#import sys
 import os
+import sys
+sys.path.append("./utils")
 import utilities
 
+### Writes the submission scripts and dag splices for reconstructing with Quad
 def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, geo_file, av_shift, defaultMaterial):
 
+    ## Get the different speeds we want to run over
     speeds = utilities.QuadSpeeds
 
     ## Make a condor submit file from template
@@ -12,7 +15,7 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, ge
     template_condor_file = open(template_condor_filename, "r")
     template_condor_raw_text = string.Template(template_condor_file.read())
 
-    ## Make .sh file from template
+    ## Make bash file from template
     template_sh_filename = "template_files/template.sh"
     template_sh_file = open(template_sh_filename, "r")
     template_sh_raw_text = string.Template(template_sh_file.read())
@@ -28,10 +31,13 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, ge
     macro      = string.Template(open("/home/parkerw/Software/rat-tools_fork/FitCoordination/QuadSpeed/Template_Macro_Inroot.mac", "r").read()) #TODO fix this eventually
     dag_splice_text = ""
 
+    ## We will count how many input files we've looped over, so we can ensure each veocity gets independent filles
     file_count = 0
+
     ## Now run these macros over some simulation (with diff velocities)
     for i in speeds:
 
+        ## Loop over input files
         input_file = ""
         input_command = ""
         for infile_num in range(utilities.quad_files_per_velocity):
@@ -39,7 +45,7 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, ge
             input_command = "/rat/inroot/load"
             file_count += 1
 
-        ## First make the rat macro
+        ## Make the rat macro
         output_file = "{0}/quadFit_{1}.root".format(job_dir, str(int(i)))
         if defaultMaterial:
             speed_string = "QUAD_FIT light_speed %s" % i
@@ -57,7 +63,7 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, ge
         with open(macro_name, "w") as macro_file:
             macro_file.write(macro_text)
 
-        ## And make the sh file to run
+        ## And make the bash file to run
         sh_text = template_sh_raw_text.substitute(env_file=env_file,
                                                   rat_root=rat_root,
                                                   macro_name="{0}{1}_{2}.mac".format(mac_dir, job_name, i),
@@ -85,16 +91,15 @@ def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, ge
     with open(dag_splice_name, "w") as dag_splice:
         dag_splice.write(dag_splice_text)
 
-
+### Writes the submission scripts and dag splice for running job to analyse Quad files
 def setup_analyse_jobs(job_name, in_dir, out_dir, material, rat_root, env_file, submission_dir):
-    ## Now run analyse data funcs over these files, in the dag file
 
     ## Make a condor submit file from template
     template_condor_filename = "template_files/template_condor.sub"
     template_condor_file = open(template_condor_filename, "r")
     template_condor_raw_text = string.Template(template_condor_file.read())
 
-    ## Make .sh file from template
+    ## Make bash file from template
     template_analyse_filename = "template_files/template_analyse_quad.sh"
     template_analyse_sh_file = open(template_analyse_filename, "r")
     template_analyse_sh_raw_text = string.Template(template_analyse_sh_file.read())

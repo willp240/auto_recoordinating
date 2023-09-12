@@ -1,11 +1,10 @@
 import string
-#import sys
 import os
-#import utilities
 
+## Setup the multiPDF-SEV loop script and copy to output directory
 def setup_loop_script(out_dir, material, rat_root, env_file, sub_dir):
 
-    ## copy loop script to output dir
+    ## Copy loop script to output dir and update it
     template_loop_filename = string.Template(open("{0}/dag/iterate_loop.sh".format(sub_dir), "r").read())
     template_loop_text = template_loop_filename.substitute(out_dir=out_dir,
                                                            env_file=env_file,

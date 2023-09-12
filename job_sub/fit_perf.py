@@ -1,8 +1,8 @@
 import string
-#import sys
 import os
 import utilities
 
+### Writes the submission scripts and dag splices for reconstructing with full position fitter
 def setup_recon_jobs(job_name, out_dir, infile, rat_root, env_file, submission_dir, av_shift):
 
     ## Make a condor submit file from template
@@ -10,7 +10,7 @@ def setup_recon_jobs(job_name, out_dir, infile, rat_root, env_file, submission_d
     template_condor_file = open(template_condor_filename, "r")
     template_condor_raw_text = string.Template(template_condor_file.read())
 
-    ## Make .sh file from template
+    ## Make bash file from template
     template_sh_filename = "template_files/template.sh"
     template_sh_file = open(template_sh_filename, "r")
     template_sh_raw_text = string.Template(template_sh_file.read())
@@ -23,15 +23,16 @@ def setup_recon_jobs(job_name, out_dir, infile, rat_root, env_file, submission_d
     sh_dir     = utilities.check_dir("{0}/sh/".format(job_dir))
     submit_dir = utilities.check_dir("{0}/submit/".format(job_dir))
     output_dir = utilities.check_dir("{0}/output/".format(job_dir))
-    macro      = string.Template(open("{0}/rat_mac/fit_perf_recon.mac".format(submission_dir), "r").read()) #TODO fix this eventually
+    macro      = string.Template(open("{0}/rat_mac/fit_perf_recon.mac".format(submission_dir), "r").read())
     dag_splice_text = ""
 
     ## Now loop over number of jobs to run
     for i in range(utilities.sim_num_files):
 
+        ## Get input filename
         input_file = out_dir + "/" + infile + "/" + infile + "_" + str(i) + ".root"
 
-        ## First make the rat macro
+        ## Make the rat macro
         output_file = "{0}/{1}_{2}.root".format(job_dir, job_name, i)
         macro_text = macro.substitute(AVShift=av_shift,
                                       InputFileName=input_file,
@@ -40,7 +41,7 @@ def setup_recon_jobs(job_name, out_dir, infile, rat_root, env_file, submission_d
         with open(macro_name, "w") as macro_file:
             macro_file.write(macro_text)
 
-        ## And make the sh file to run
+        ## And make the bash file to run
         sh_text = template_sh_raw_text.substitute(env_file=env_file,
                                                   rat_root=rat_root,
                                                   macro_name="{0}{1}_{2}.mac".format(mac_dir, job_name, i),
@@ -71,7 +72,8 @@ def setup_recon_jobs(job_name, out_dir, infile, rat_root, env_file, submission_d
     with open(dag_splice_name, "w") as dag_splice:
         dag_splice.write(dag_splice_text)
 
-
+### Writes the submission scripts and dag splices for running FitPerformanceTools
+### "coord" is the coordinate the bias and resolution are to be plotted as a function of 
 def setup_tools_jobs(job_name, out_dir, in_dir, env_file, submission_dir, coord):
 
     ## Make a condor submit file from template
@@ -79,7 +81,7 @@ def setup_tools_jobs(job_name, out_dir, in_dir, env_file, submission_dir, coord)
     template_condor_file = open(template_condor_filename, "r")
     template_condor_raw_text = string.Template(template_condor_file.read())
 
-    ## Make .sh file from template
+    ## Make bash file from template
     template_sh_filename = "template_files/template_tools.sh"
     template_sh_file = open(template_sh_filename, "r")
     template_sh_raw_text = string.Template(template_sh_file.read())
@@ -96,7 +98,7 @@ def setup_tools_jobs(job_name, out_dir, in_dir, env_file, submission_dir, coord)
     input_files = "\"" + out_dir + "/" + in_dir + "/*.root\""
     output_file = "{0}/{1}_{2}.root".format(job_dir, job_name, coord)
 
-    ## And make the sh file to run
+    ## And make the bash file to run
     sh_text = template_sh_raw_text.substitute(env_file=env_file,
                                               input_files=input_files,
                                               output_file = output_file,

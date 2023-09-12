@@ -1,3 +1,8 @@
+#############################################################
+### Template condor submission file submit jobs to a cluster
+### Options are written in by the scripts in job_sub
+#############################################################
+
 executable   = ${sh_file}
 output       = ${output_file}
 error        = ${error_file}

@@ -1,3 +1,7 @@
+####################################################################################
+### Template macro for reconstructing presimulated events with full position fitter 
+### Options are written in by scripts in job_sub
+####################################################################################
 
 ${AVShift}
 

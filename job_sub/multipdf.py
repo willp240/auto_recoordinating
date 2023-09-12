@@ -1,8 +1,10 @@
 import string
-#import sys
 import os
+import sys
+sys.path.append("./utils")
 import utilities
 
+### Writes the submission scripts and dag splices for reconstructing and analysing with multiPDF
 def setup_recon_jobs(job_name, out_dir, input_file, material, rat_root, env_file, submission_dir):
 
     ## Make a condor submit file from template
@@ -18,9 +20,7 @@ def setup_recon_jobs(job_name, out_dir, input_file, material, rat_root, env_file
     submit_dir = utilities.check_dir("{0}/submit/".format(job_dir))
     output_dir = utilities.check_dir("{0}/output/".format(job_dir))
 
-    ## Now run analyse data funcs over these files, in the dag file
-
-    ## Make .sh file from template
+    ## Make bash file from template
     template_analyse_filename = "template_files/template_analyse_mpdf.sh"
     template_analyse_sh_file = open(template_analyse_filename, "r")
     template_analyse_sh_raw_text = string.Template(template_analyse_sh_file.read())

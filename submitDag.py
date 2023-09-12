@@ -20,23 +20,23 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser("Launch jobs for recoordinating position fitters")
     parser.add_argument('out_dir', type=str, help='directory to place reprocessed files')
     parser.add_argument('-e', '--env_file', type=str,
-                        help='path to environment file',
+                        help='Path to environment file',
                         default="/path/to/environment/env.sh")
     parser.add_argument("-s", "--submission_directory", type=str,
                        default="/path/to/this/repository/rat-tools/FitCoordination/auto_recoordination",
-                       help="path to the directory this file is in, for outputs and inputs")
+                       help="Path to the directory this file is in, for outputs and inputs")
     parser.add_argument("-r", "--rat_root", type=str,
                        default="/path/to/rat/",
-                       help="base rat directory")
+                       help="Base rat directory")
     parser.add_argument("-m", "--material", type=str,
                        default="labppo_2p2_scintillator",
-                       help="which material are we recoordinating for?")
+                       help="Which material are we recoordinating for?")
     parser.add_argument("-g", "--geo_file", type=str, 
                         default = "geo/snoplusnative.geo",
-                        help = "geometry file to use - location relative to rat/data/")
+                        help = "Geometry file to use - location relative to rat/data/")
     parser.add_argument("-x", "--extraAVShift", type=str, 
                         default = "",
-                        help = "set z coordinate of AV centre. Overwrites shift set in geo file")
+                        help = "Set z coordinate of AV centre. Overwrites shift set in geo file")
     args = parser.parse_args()
 
     ## Check if output and condor directories exist, create if they don't
@@ -90,26 +90,28 @@ if __name__ == "__main__":
     scint_eff_vel.setup_recon_jobs("sev_recon_round0", out_dir, "e2p5MeV_sim", False, material, rat_root, env_file, submission_dir, geo_file, av_shift, default_material)
     scint_eff_vel.setup_analyse_jobs("sev_analyse_round0", out_dir, "single_energy", "sev_recon_round0", "", material, rat_root, env_file, submission_dir)
 
-    ## Recoordinate MultiPDF
+    ## Recoordinate multiPDF
     multipdf.setup_recon_jobs("multiPDF_recon_round0", out_dir, "e2p5MeV_sim", material, rat_root, env_file, submission_dir)
 
-    ## Script for iterating the scintillator effective velocity and MultiPDF loop
+    ## Script for iterating the scintillator effective velocity and multiPDF loop
     loop.setup_loop_script(out_dir, material, rat_root, env_file, submission_dir)
 
-    ## Nowreconstruct the higher energy files for scaling scintillator effective velocity
+    ## Now reconstruct the higher energy files for scaling scintillator effective velocity
     scint_eff_vel.setup_recon_jobs("sev_recon_high_e", out_dir, "e10p0MeV_sim", True, material, rat_root, env_file, submission_dir, geo_file, av_shift, False)
     scint_eff_vel.setup_analyse_jobs("sev_analyse_high_e", out_dir, "interpolate", "sev_recon_round", "sev_recon_high_e", material, rat_root, env_file, submission_dir)
 
     ## Using the newly recooordinated fitters, reconstruct events for fit performance
     fit_perf.setup_recon_jobs("perf_e2p5MeV_recon", out_dir, "perf_e2p5MeV_sim", rat_root, env_file, submission_dir, av_shift)
     fit_perf.setup_recon_jobs("perf_e1to10MeV_recon", out_dir, "perf_e1to10MeV_sim", rat_root, env_file, submission_dir, av_shift)
+    fit_perf.setup_recon_jobs("perf_e1to10MeV_r4m_recon", out_dir, "perf_e1to10MeV_r4m_sim", rat_root, env_file, submission_dir, av_shift)
 
     ## Finally, run the fit performance tools
     fit_perf.setup_tools_jobs("perf_e2p5MeV_tools", out_dir, "perf_e2p5MeV_recon", env_file, submission_dir, "r")
     fit_perf.setup_tools_jobs("perf_e2p5MeV_tools", out_dir, "perf_e2p5MeV_recon", env_file, submission_dir, "z")
     fit_perf.setup_tools_jobs("perf_e1to10MeV_tools", out_dir, "perf_e1to10MeV_recon", env_file, submission_dir, "r")
     fit_perf.setup_tools_jobs("perf_e1to10MeV_tools", out_dir, "perf_e1to10MeV_recon", env_file, submission_dir, "z")
-    fit_perf.setup_tools_jobs("perf_e1to10MeV_tools", out_dir, "perf_e1to10MeV_r4m_sim", env_file, submission_dir, "e")
+    ## Use different simulation when plotting as a function of energy. Only use events in 4m FV
+    fit_perf.setup_tools_jobs("perf_e1to10MeV_tools", out_dir, "perf_e1to10MeV_r4m_recon", env_file, submission_dir, "e")
 
     ## We are now ready to submit the dag man
     sub_command = "condor_submit_dag {0}/main.dag".format(dag_dir)

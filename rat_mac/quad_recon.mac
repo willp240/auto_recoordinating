@@ -1,3 +1,7 @@
+####################################################################
+### Template macro for reconstructing presimulated events with Quad
+### Options are written in by scripts in job_sub
+####################################################################
 
 /rat/inroot/load ${input_file}
 

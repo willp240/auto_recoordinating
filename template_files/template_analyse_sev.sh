@@ -1,3 +1,8 @@
+###############################################################
+### Template bash script to run sev analysis jobs on a cluster
+### Options are written in by the scripts in job_sub
+###############################################################
+
 #!/usr/bin/sh
 
 source ${env_file}
