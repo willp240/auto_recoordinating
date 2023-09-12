@@ -1,9 +1,9 @@
+#!/usr/bin/sh
+
 ######################################################
 ### Template bash script to run rat jobs on a cluster
 ### Options are written in by the scripts in job_sub
 ######################################################
-
-#!/usr/bin/sh
 
 source ${env_file}
 cd ${rat_root}
