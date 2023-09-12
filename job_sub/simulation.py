@@ -1,8 +1,12 @@
 import string
-#import sys
 import os
+import sys
+sys.path.append("./utils")
 import utilities
 
+### Writes the submission scripts and dag splices for running e- simulation jobs
+### If fixed energy is true, e- have energy given by argument "energy"
+### Otherwise they are uniform in range "energy" to "energy_high"
 def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shift, fixed_energy, energy, energy_high=10, r_min=0, r_max=4000):
 
     ## Make a condor submit file from template
@@ -10,7 +14,7 @@ def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shi
     template_condor_file = open(template_condor_filename, "r")
     template_condor_raw_text = string.Template(template_condor_file.read())
 
-    ## Make .sh file from template
+    ## Make bash file from template
     template_sh_filename = "template_files/template.sh"
     template_sh_file = open(template_sh_filename, "r")
     template_sh_raw_text = string.Template(template_sh_file.read())
@@ -23,6 +27,7 @@ def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shi
     sh_dir     = utilities.check_dir("{0}/sh/".format(job_dir))
     submit_dir = utilities.check_dir("{0}/submit/".format(job_dir))
     output_dir = utilities.check_dir("{0}/output/".format(job_dir))
+    ## Use different rat macro depending on whether fixed or varying energy
     if fixed_energy == True:
         macro  = string.Template(open("rat_mac/fixed_e_sim.mac", "r").read())
         energy_string = str(energy)
@@ -44,12 +49,13 @@ def setup_jobs(job_name, out_dir, material, rat_root, env_file, geo_file, av_shi
                                       FileName=output_file,
                                       Energy=energy_string,
                                       R_Min=str(r_min),
-                                      R_Max=str(r_max))
+                                      R_Max=str(r_max),
+                                      num_events=utilities.num_evs_per_file)
         macro_name = "{0}/{1}_{2}.mac".format(mac_dir, job_name, i)
         with open(macro_name, "w") as macro_file:
             macro_file.write(macro_text)
 
-        ## And make the sh file to run
+        ## And write the bash file to run
         sh_text = template_sh_raw_text.substitute(env_file=env_file,
                                                   rat_root=rat_root,
                                                   macro_name="{0}{1}_{2}.mac".format(mac_dir, job_name, i),
