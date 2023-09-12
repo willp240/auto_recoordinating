@@ -1,36 +1,38 @@
-SPLICE e2p5MeV_sim                                      ${dag_dir}/e2p5MeV_sim.spl
-SPLICE e10p0MeV_sim                                     ${dag_dir}/e10p0MeV_sim.spl
+SPLICE e2p5MeV_sim                                        ${dag_dir}/e2p5MeV_sim.spl
+SPLICE e10p0MeV_sim                                       ${dag_dir}/e10p0MeV_sim.spl
 
-SPLICE perf_e2p5MeV_sim                                 ${dag_dir}/perf_e2p5MeV_sim.spl
-SPLICE perf_e1to10MeV_sim                               ${dag_dir}/perf_e1to10MeV_sim.spl
-SPLICE perf_e1to10MeV_r4m_sim                           ${dag_dir}/perf_e1to10MeV_r4m_sim.spl
+SPLICE perf_e2p5MeV_sim                                   ${dag_dir}/perf_e2p5MeV_sim.spl
+SPLICE perf_e1to10MeV_sim                                 ${dag_dir}/perf_e1to10MeV_sim.spl
+SPLICE perf_e1to10MeV_r4m_sim                             ${dag_dir}/perf_e1to10MeV_r4m_sim.spl
 
-SPLICE quad_recon                                       ${dag_dir}/quad_recon.spl
-SPLICE quad_analyse                                     ${dag_dir}/quad_analyse.spl
+SPLICE quad_recon                                         ${dag_dir}/quad_recon.spl
+SPLICE quad_analyse                                       ${dag_dir}/quad_analyse.spl
 
-SUBDAG EXTERNAL                 sev_mpdf_loop           ${dag_dir}/loop_sub.dag
-SCRIPT POST                     sev_mpdf_loop           ${dag_dir}/iterate_loop.sh
-RETRY  sev_mpdf_loop                                    10
+SUBDAG EXTERNAL                 sev_mpdf_loop             ${dag_dir}/loop_sub.dag
+SCRIPT POST                     sev_mpdf_loop             ${dag_dir}/iterate_loop.sh
+RETRY  sev_mpdf_loop                                      10
 
-SPLICE sev_recon_high_e                                 ${dag_dir}/sev_recon_high_e.spl
-SPLICE sev_analyse_high_e                               ${dag_dir}/sev_analyse_high_e.spl
+SPLICE sev_recon_high_e                                   ${dag_dir}/sev_recon_high_e.spl
+SPLICE sev_analyse_high_e                                 ${dag_dir}/sev_analyse_high_e.spl
 
-SPLICE perf_e2p5MeV_recon                               ${dag_dir}/perf_e2p5MeV_recon.spl
-SPLICE perf_e1to10MeV_recon                             ${dag_dir}/perf_e1to10MeV_recon.spl
+SPLICE perf_e2p5MeV_recon                                 ${dag_dir}/perf_e2p5MeV_recon.spl
+SPLICE perf_e1to10MeV_recon                               ${dag_dir}/perf_e1to10MeV_recon.spl
+SPLICE perf_e1to10MeV_r4m_recon                           ${dag_dir}/perf_e1to10MeV_r4m_recon.spl
 
-SPLICE perf_e2p5MeV_tools                               ${dag_dir}/perf_e2p5MeV_tools.spl
-SPLICE perf_e1to10MeV_tools                             ${dag_dir}/perf_e1to10MeV_tools.spl
+SPLICE perf_e2p5MeV_tools                                 ${dag_dir}/perf_e2p5MeV_tools.spl
+SPLICE perf_e1to10MeV_tools                               ${dag_dir}/perf_e1to10MeV_tools.spl
 
-PARENT e2p5MeV_sim                                      CHILD quad_recon
+PARENT e2p5MeV_sim                                        CHILD quad_recon
 
-PARENT quad_recon                                       CHILD quad_analyse
-PARENT quad_analyse                                     CHILD sev_mpdf_loop
+PARENT quad_recon                                         CHILD quad_analyse
+PARENT quad_analyse                                       CHILD sev_mpdf_loop
 
-PARENT sev_mpdf_loop             e10p0MeV_sim           CHILD sev_recon_high_e
-PARENT sev_recon_high_e                                 CHILD sev_analyse_high_e
+PARENT sev_mpdf_loop             e10p0MeV_sim             CHILD sev_recon_high_e
+PARENT sev_recon_high_e                                   CHILD sev_analyse_high_e
 
-PARENT perf_e2p5MeV_sim          sev_analyse_high_e     CHILD perf_e2p5MeV_recon
-PARENT perf_e1to10MeV_sim        sev_analyse_high_e     CHILD perf_e1to10MeV_recon
+PARENT perf_e2p5MeV_sim          sev_analyse_high_e       CHILD perf_e2p5MeV_recon
+PARENT perf_e1to10MeV_sim        sev_analyse_high_e       CHILD perf_e1to10MeV_recon
+PARENT perf_e1to10MeV_sim        sev_analyse_high_e       CHILD perf_e1to10MeV_r4m_recon
 
-PARENT perf_e2p5MeV_recon                               CHILD perf_e2p5MeV_tools
-PARENT perf_e1to10MeV_recon      perf_e1to10MeV_r4m_sim CHILD perf_e1to10MeV_tools
+PARENT perf_e2p5MeV_recon                                 CHILD perf_e2p5MeV_tools
+PARENT perf_e1to10MeV_recon      perf_e1to10MeV_r4m_recon CHILD perf_e1to10MeV_tools
