@@ -1,3 +1,5 @@
+#!/usr/bin/sh 
+
 ###################################################################
 ### Script run at the end of each iteration of the mpdf-sev loop
 ### It calls a python script to determine if we've converged
@@ -5,9 +7,6 @@
 ### splice and exit with 1, triggering a rerunning of the loop
 ### Options are written in by loop.py in job_sub
 ###################################################################
-
-
-#!/usr/bin/sh
 
 source ${env_file}
 source ${rat_root}/env.sh
