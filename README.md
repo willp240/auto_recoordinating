@@ -43,10 +43,30 @@ Plots from each stage of the recoordination processes are automatically made and
 
 Finally, `FitPerformanceTools` are ran for 2.5MeV e-, plotting in `r` and `z`, and 1-10 MeV e-, plotting on `r`, `z`, and `e` (only using events with `R < 4m` for `e`).
 
+# Known Issues/Deficiencies
+This section is here to highlight stumbling blocks found when developing the code and explain workarounds used, and how they could be improved in the future. 
+
 ## Iteration Problems
 
 As described, the `MultiPDF-ScintEffectiveVelocity` loop is iterated by running a 'post script' after the loop subdag. This post script is not submitted as a Condor job, but also isn't run on the interactive machine you submit from. On this 'no-man's-land' node, I had problems running or importing rat. Without being able to recreate the problem on interactive machines, it was difficult to debug. Perhaps I could have spent more time investigating what node I was on, what was already installed there, and why there was an issue (I suspect it was different version installs clashing), but instead invoked some pragmatic but inelegant workarounds. 
 
 In this post script we want to compare the new `ScintEffectiveVelocity` to the previous round's. Without being able to import rat, I was not able to just read the current value from the ratdb file in the normal way (like in `utils/db_utilities.py`). Instead, I write each new effective velocity to a text file in the output directory. This is maybe not the end of the world, as I would have needed a way to get the previous value at this stage anyway, and it's nice to be able to immediately see how the velocity has progressed in one place.
 
-We also want to be able to overwrite the loop splices in this script, so that when the loop is retried we don't write to the same place. For this, we need to know the `ScintEffectiveVelocities` to run over. But we can't just call `ScintEffectiveSpeed/SEVUtilities.Speeds`, as `ScintEffectiveSpeed/SEVUtilities` will want to import rat. Instead, I hard code the velocities into `./utils/utilities`. This is not ideal as it means if we change the velocities in `ScintEffectiveSpeed/SEVUtilities` we have to make the same change here. Maybe a better way would be to at the very start (in `submitDag.py`) write the velocities to another text file, and then we can just read them when we need them. But this also feels a bit clumsy
+We also want to be able to overwrite the loop splices in this script, so that when the loop is retried we don't write to the same place. For this, we need to know the `ScintEffectiveVelocities` to run over. But we can't just call `ScintEffectiveSpeed/SEVUtilities.Speeds`, as `ScintEffectiveSpeed/SEVUtilities` will want to import rat. Instead, I write the velocities to another text file, and then we can just read them when we need them. In theory, one could call `scint_eff_vel.setup_recon_jobs()` and 
+give a list of velocities as a argument that doesn't match the list of velocities in `rat-tools/FitCoordination/ScintEffectiveSpeed/SEVUtilities.py` which would cause problems. But this works for now.
+
+## Modularity
+
+Currently the code recoordinates the whole position fitter process. In the future, we probably want to include the energy fitter and classifiers. This won't be too difficult or require any changes to the structure of the code, but if we did this it would be useful to have options on which fitters/classifiers are recoordinated when running. 
+
+Relatedly, it would be useful to have an option to not simulate more events, but instead use presimulated events. This wouldn't take much effort to implement, and would be useful particularly for debugging when maybe you don't care too much about the simulation itself.
+
+We would need to write `main.dag` and `loop_sub.dag` from scratch at run time if we had these options.
+
+## Repeated Code
+
+Particularly in the job submission scripts, there is a lot of similar code setting up the log files, macros, etc. Maybe these could be combined into a single function, but they all need slightly different things. I think it's ok for now but something to think about if we were making big changes.
+
+## Writing to Bash Template Files
+
+The `iterate_loop.sh` script gets filled out by `loop.py` with the `substitute` function. Because `substitute` looks for `$`'s in the target file, we can't initially have environment variables inside the template bash script. Instead we write them when doing the substitution. It's a bit clunky, as some of the fields that get substituted are the same every time, so you'd think they could be directly in the template. It works fine, it just reduces the readability.
