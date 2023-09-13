@@ -5,10 +5,7 @@ sys.path.append("./utils")
 import utilities
 
 ### Writes the submission scripts and dag splices for reconstructing with Quad
-def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, geo_file, av_shift, defaultMaterial):
-
-    ## Get the different speeds we want to run over
-    speeds = utilities.QuadSpeeds
+def setup_recon_jobs(job_name, out_dir, infile, material, rat_root, env_file, geo_file, av_shift, defaultMaterial, speeds):
 
     ## Make a condor submit file from template
     template_condor_filename = "template_files/template_condor.sub"

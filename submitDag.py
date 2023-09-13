@@ -14,6 +14,10 @@ import db_utilities
 import fit_perf
 import rat
 from ROOT import RAT
+sys.path.append("/home/parkerw/Software/rat-tools_fork/FitCoordination/ScintEffectiveSpeed") #TODO fix this and below
+import SEVUtilities
+sys.path.append("/home/parkerw/Software/rat-tools_fork/FitCoordination/QuadSpeed")
+import Utilities
 
 if __name__ == "__main__":
 
@@ -71,11 +75,27 @@ if __name__ == "__main__":
     ## Check if this will be first time sev has been recoordinated for this material
     default_material = db_utilities.check_first_sev(material)
 
+    ## Get SEV velocities and write to a file
+    sev_vels = SEVUtilities.Speeds
+    sev_vels_filename = "{0}/sev_velocities.txt".format(out_dir)
+    sev_vels_file = open(sev_vels_filename, 'w')
+    for vel in sev_vels:
+        sev_vels_file.write(str(vel) + "\n")
+    sev_vels_file.close()
+
+    ## Get Quad velocities and write to a file
+    quad_vels = Utilities.SpeedsScint
+    quad_vels_filename = "{0}/quad_velocities.txt".format(out_dir)
+    quad_vels_file = open(quad_vels_filename, 'w')
+    for vel in quad_vels:
+        quad_vels_file.write(str(vel) + "\n")
+    quad_vels_file.close()
+
     ## Now going to write the dag files and job submission scripts
 
     ## Initial simulation 
     simulation.setup_jobs("e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, utilities.sim_num_files, True, 2.5, 0, 0, 4000)
-    simulation.setup_jobs("e10p0MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, utilities.sev_files_per_velocity*len(utilities.SEVSpeeds), True, 10.0, 0, 0, 4000)
+    simulation.setup_jobs("e10p0MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, utilities.sev_files_per_velocity*len(sev_vels), True, 10.0, 0, 0, 4000)
 
     ## Also the simulation for fit performance tools, may as well start the simulation now
     simulation.setup_jobs("perf_e2p5MeV_sim",  out_dir, material, rat_root, env_file, geo_file, av_shift, utilities.sim_num_files, True, 2.5, 0, 0, 6000)
@@ -83,11 +103,11 @@ if __name__ == "__main__":
     simulation.setup_jobs("perf_e1to10MeV_sim", out_dir, material, rat_root, env_file, geo_file, av_shift, utilities.sim_num_files, True, 10.0, 0, 0, 6000)
 
     ## Recoordinate quad first
-    quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, geo_file, av_shift, default_material)
+    quad.setup_recon_jobs("quad_recon", out_dir, "e2p5MeV_sim", material, rat_root, env_file, geo_file, av_shift, default_material, quad_vels)
     quad.setup_analyse_jobs("quad_analyse", "quad_recon", out_dir, material, rat_root, env_file, submission_dir) 
 
     ## Recoordinate scintillator effective velocity
-    scint_eff_vel.setup_recon_jobs("sev_recon_round0", out_dir, "e2p5MeV_sim", False, material, rat_root, env_file, submission_dir, geo_file, av_shift, default_material)
+    scint_eff_vel.setup_recon_jobs("sev_recon_round0", out_dir, "e2p5MeV_sim", False, material, rat_root, env_file, submission_dir, geo_file, av_shift, default_material, sev_vels)
     scint_eff_vel.setup_analyse_jobs("sev_analyse_round0", out_dir, "single_energy", "sev_recon_round0", "", material, rat_root, env_file, submission_dir)
 
     ## Recoordinate multiPDF
@@ -97,7 +117,7 @@ if __name__ == "__main__":
     loop.setup_loop_script(out_dir, material, rat_root, env_file, submission_dir)
 
     ## Now reconstruct the higher energy files for scaling scintillator effective velocity
-    scint_eff_vel.setup_recon_jobs("sev_recon_high_e", out_dir, "e10p0MeV_sim", True, material, rat_root, env_file, submission_dir, geo_file, av_shift, False)
+    scint_eff_vel.setup_recon_jobs("sev_recon_high_e", out_dir, "e10p0MeV_sim", True, material, rat_root, env_file, submission_dir, geo_file, av_shift, False, sev_vels)
     scint_eff_vel.setup_analyse_jobs("sev_analyse_high_e", out_dir, "interpolate", "sev_recon_round", "sev_recon_high_e", material, rat_root, env_file, submission_dir)
 
     ## Using the newly recooordinated fitters, reconstruct events for fit performance

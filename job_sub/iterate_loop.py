@@ -71,9 +71,15 @@ if __name__ == "__main__":
             ## If so exit with 0
             exit(0)
 
+    ## Open file where we write the effective velocities we run over
+    sev_vels_filename = "{0}/sev_velocities.txt".format(out_dir)
+    sev_vels_file = open(sev_vels_filename, 'r')
+    sev_vels_text = sev_vels_file.read()
+    sev_vels_list = sev_vels_text.split()
+
     ## If we've not yet converged, rewrite the dag and submission scripts
     ## Re-recoordinate scint effective velocities
-    scint_eff_vel.setup_recon_jobs("sev_recon_round{0}".format(round_num), out_dir, "e2p5MeV_sim", False, material, rat_root, env_file, submission_dir, geo_file, av_shift, False)
+    scint_eff_vel.setup_recon_jobs("sev_recon_round{0}".format(round_num), out_dir, "e2p5MeV_sim", False, material, rat_root, env_file, submission_dir, geo_file, av_shift, False, sev_vels_list)
     scint_eff_vel.setup_analyse_jobs("sev_analyse_round{0}".format(round_num), out_dir, "single_energy", "sev_recon_round{0}".format(round_num), "", material, rat_root, env_file, submission_dir)
 
     ## Re-recoordinate multiPDF

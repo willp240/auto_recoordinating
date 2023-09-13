@@ -6,9 +6,7 @@ import utilities
 
 ### Writes the submission scripts and dag splices for reconstructing with SEV
 ### If high_e is True, outputted files have high_e in name for scaling by nhits
-def setup_recon_jobs(job_name, out_dir, infile, high_e, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial):
-
-    speeds = utilities.SEVSpeeds
+def setup_recon_jobs(job_name, out_dir, infile, high_e, material, rat_root, env_file, submission_dir, geo_file, av_shift, defaultMaterial, speeds):
 
     ## Make a condor submit file from template
     template_condor_filename = "template_files/template_condor.sub"

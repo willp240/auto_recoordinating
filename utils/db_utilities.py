@@ -1,5 +1,3 @@
-#import string
-#import sys
 import os
 import rat
 from ROOT import RAT
