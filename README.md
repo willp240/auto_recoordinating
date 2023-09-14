@@ -1,3 +1,5 @@
+NOTE: this repo is now deprecated as a pull request incorporating it into rat-tools has been made. Further developments will take place there 
+
 # auto_recoordinating
 
 Tool for automating the position fitter recoordination process at SNO+. Using HTCondor's DAGMan, sequential job are submitted to a batch system. It only works for HTCondor systems, so if you are using a different system you'll need to use the individual `FitCoordinationTools`. This tool uses those same tools, but requiring minimum user input and efficient use of simulation.
