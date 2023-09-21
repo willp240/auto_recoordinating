@@ -1,7 +1,7 @@
 import os
 
 ## Parameters you can tweak to optimise speed of recoordination
-sev_files_per_velocity = 5
+sev_files_per_velocity = 10
 quad_files_per_velocity = 1
 sim_num_files = 200
 num_evs_per_file = 500
